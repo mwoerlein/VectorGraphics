@@ -53,4 +53,3 @@ class Path {
         return $this->elements;
     }
 }
-

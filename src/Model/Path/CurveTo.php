@@ -64,4 +64,3 @@ class CurveTo extends PathElement {
         return $this->control2Y;
     }
 }
-

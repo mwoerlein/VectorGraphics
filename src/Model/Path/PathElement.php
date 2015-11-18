@@ -20,7 +20,7 @@ abstract class PathElement {
     }
     
     /**
-     * @return int
+     * @return float
      */
     public function getDestX()
     {
@@ -28,11 +28,10 @@ abstract class PathElement {
     }
     
     /**
-     * @return int
+     * @return float
      */
     public function getDestY()
     {
         return $this->destY;
     }
 }
-
