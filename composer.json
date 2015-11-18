@@ -1,0 +1,26 @@
+{
+  "name": "mwoerlein/VectorGraphics",
+  "description": "Library for OO-modeling of vector graphics.",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@github.com:mwoerlein/VectorGraphics.git"
+    }
+  ],
+  "require": {
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.1"
+  },
+  "authors": [
+    {
+      "name": "Marc Woerlein",
+      "email": "marc.woerlein@perbility.de"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "VectorGraphics\\" : "src/"
+    }
+  }
+}
