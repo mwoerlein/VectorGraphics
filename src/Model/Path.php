@@ -12,6 +12,7 @@ class Path {
     
     /**
      * @param PathElement $element
+     *
      * @return Path $this
      */
     public function add(PathElement $element)
@@ -23,6 +24,7 @@ class Path {
     /**
      * @param float $x
      * @param float $y
+     *
      * @return Path $this
      */
     public function moveTo($x, $y)
@@ -33,6 +35,7 @@ class Path {
     /**
      * @param float $x
      * @param float $y
+     *
      * @return Path $this
      */
     public function lineTo($x, $y)
@@ -41,8 +44,13 @@ class Path {
     }
     
     /**
+     * @param float $cx1
+     * @param float $cy1
+     * @param float $cx2
+     * @param float $cy2
      * @param float $x
      * @param float $y
+     *
      * @return Path $this
      */
     public function curveTo($cx1, $cy1, $cx2, $cy2, $x, $y)
