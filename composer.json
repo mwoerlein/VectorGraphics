@@ -1,12 +1,7 @@
 {
   "name": "mwoerlein/vector-graphics",
   "description": "Library for OO-modeling of vector graphics.",
-  "repositories": [
-    {
-      "type": "git",
-      "url": "git@github.com:mwoerlein/VectorGraphics.git"
-    }
-  ],
+  "license": "LGPL-2.1",
   "require": {
   },
   "require-dev": {
