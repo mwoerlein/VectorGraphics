@@ -1,5 +1,10 @@
 <?php
-namespace VectorGraphics\Model\Path;
+namespace VectorGraphics\Model;
+
+use VectorGraphics\Model\Path\CurveTo;
+use VectorGraphics\Model\Path\LineTo;
+use VectorGraphics\Model\Path\MoveTo;
+use VectorGraphics\Model\Path\PathElement;
 
 class Path {
     /** @var PathElement[] */
