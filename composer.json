@@ -3,6 +3,7 @@
   "description": "Library for OO-modeling of vector graphics.",
   "license": "LGPL-2.1",
   "require": {
+    "php": ">=5.5.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.1"

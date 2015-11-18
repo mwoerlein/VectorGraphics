@@ -22,7 +22,7 @@ class PathTest extends TestCase
     {
         $path = new Path();
         $this->assertEmpty($path->getElements());
-        $path->moveTo(2.3, 4.5);
+        $path->lineTo(2.3, 4.5);
         $elements = $path->getElements();
         $this->assertCount(1, $elements);
         $this->assertInstanceOf(Path\LineTo::class, $elements[0]);
