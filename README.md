@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mwoerlein/VectorGraphics.svg?branch=develop)](https://travis-ci.org/mwoerlein/VectorGraphics)
+[![Build Status](https://travis-ci.org/mwoerlein/vector-graphics.svg?branch=develop)](https://travis-ci.org/mwoerlein/vector-graphics)
 
 # Vector Graphics Library
 PHP library for OO-modeling of vector graphics.
