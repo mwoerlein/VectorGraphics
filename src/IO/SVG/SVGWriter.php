@@ -6,6 +6,7 @@ use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Graphic;
 use VectorGraphics\Model\Graphic\GraphicElement;
 use VectorGraphics\Model\Graphic\Viewport;
+use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\LineTo;
 use VectorGraphics\Model\Path\MoveTo;
@@ -79,12 +80,13 @@ class SVGWriter extends AbstractWriter
                     . $element->getControl1X() . ',' . ($yBase - $element->getControl1Y()) . ' '
                     . $element->getControl2X() . ',' . ($yBase - $element->getControl2Y()) . ' '
                     . $element->getDestX() . ',' . ($yBase - $element->getDestY()) . ' ';
+            } elseif ($element instanceof Close) {
+                $d .= "Z ";
             } else {
                 // TODO: cleanup exceptions
                 throw new \Exception("Unexpected");
             }
         }
-        $d .= "Z"; // TODO: always close path?
         $path = $svg->addChild("path");
         $path->addAttribute("d", $d);
         $this->addStyle($path, $shape);

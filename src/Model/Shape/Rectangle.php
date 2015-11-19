@@ -78,6 +78,6 @@ class Rectangle extends Shape
             ->lineTo($x1, $y2)
             ->lineTo($x2, $y2)
             ->lineTo($x2, $y1)
-            ->lineTo($x1, $y1);
+            ->close();
     }
 }

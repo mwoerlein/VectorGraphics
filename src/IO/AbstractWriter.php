@@ -85,6 +85,7 @@ class AbstractWriter
             $radius * sin(9./5. * pi())/2, $radius * cos(9./5. * pi())/2,
             $radius * sin(0./5. * pi()), $radius * cos(0./5. * pi())
         );
+        $path->close();
 
         $shape = new PathShape($path);
         $shape->setFillColor("black");
@@ -100,11 +101,30 @@ class AbstractWriter
         $path->lineTo($radius * sin(3./5. * pi()), $radius * cos(3./5. * pi()));
         $path->lineTo($radius * sin(7./5. * pi()), $radius * cos(7./5. * pi()));
         $path->lineTo($radius * sin(1./5. * pi()), $radius * cos(1./5. * pi()));
+        $path->close();
 
         $shape = new PathShape($path);
         $shape->setStrokeColor("blue");
         $shape->setFillColor("black");
         $shape->setStrokeOpacity(0.6);
+        $shape->setOpacity(0.6);
+
+        $graphic->add($shape);
+
+        $radius = 20;
+        $path = new Path();
+        $path->moveTo($radius * sin(0./3. * pi()), $radius * cos(0./3. * pi()));
+        $path->lineTo($radius * sin(2./3. * pi()), $radius * cos(2./3. * pi()));
+        $path->lineTo($radius * sin(4./3. * pi()), $radius * cos(4./3. * pi()));
+        $path->close();
+        $path->moveTo($radius * sin(1./3. * pi()), $radius * cos(1./3. * pi()));
+        $path->lineTo($radius * sin(5./3. * pi()), $radius * cos(5./3. * pi()));
+        $path->lineTo($radius * sin(3./3. * pi()), $radius * cos(3./3. * pi()));
+        $path->close();
+
+        $shape = new PathShape($path);
+        $shape->setStrokeColor("black");
+        $shape->setFillColor("gray");
         $shape->setOpacity(0.6);
 
         $graphic->add($shape);

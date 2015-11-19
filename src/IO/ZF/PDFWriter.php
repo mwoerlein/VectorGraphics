@@ -6,14 +6,15 @@ use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Graphic;
 use VectorGraphics\Model\Graphic\Viewport;
 use VectorGraphics\Model\Path;
-use VectorGraphics\Model\Path\MoveTo;
-use VectorGraphics\Model\Path\LineTo;
+use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
+use VectorGraphics\Model\Path\LineTo;
+use VectorGraphics\Model\Path\MoveTo;
 use VectorGraphics\Model\Shape;
 use ZendPdf\Color\ColorInterface;
 use ZendPdf\Color\Html;
-use ZendPdf\Page as ZendPage;
 use ZendPdf\InternalType\NumericObject;
+use ZendPdf\Page as ZendPage;
 
 class PDFWriter extends AbstractWriter
 {
@@ -159,12 +160,14 @@ class PDFWriter extends AbstractWriter
                     . $x2Obj->toString() . ' ' . $y2Obj->toString() . ' '
                     . $x3Obj->toString() . ' ' . $y3Obj->toString() . ' '
                     . " c\n";
+            } elseif ($element instanceof Close) {
+                $content .= "h\n";
             } else {
+                // TODO: cleanup exceptions
                 throw new \Exception('Unsupported PathElement: ' . get_class($element));
             }
         }
 
-        $content .= "h"; // TODO: always close path?
 
         switch ($fillType) {
             case ZendPage::SHAPE_DRAW_FILL_AND_STROKE:

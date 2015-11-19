@@ -65,6 +65,7 @@ class Circle extends Shape
             ->curveTo($x+$s, $y+$r, $x+$r, $y+$s, $x+$r, $y)
             ->curveTo($x+$r, $y-$s, $x+$s, $y-$r, $x, $y-$r)
             ->curveTo($x-$s, $y-$r, $x-$r, $y-$s, $x-$r, $y)
-            ->curveTo($x-$r, $y+$s, $x-$s, $y+$r, $x, $y+$r);
+            ->curveTo($x-$r, $y+$s, $x-$s, $y+$r, $x, $y+$r)
+            ->close();
     }
 }
