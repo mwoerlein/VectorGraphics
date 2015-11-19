@@ -8,26 +8,26 @@ class PathTest extends TestCase
 {
     /**
      */
-    public function testAddAndGet()
+    public function testAddMultipleAndGet()
     {
         $path = new Path();
         $this->assertEmpty($path->getElements());
         $elements = [
             new Path\MoveTo(1, 1),
             new Path\LineTo(1, 0),
-            new Path\CurveTo(1, 0.55, 0,55, 1, 0, 1),
-            new Path\LineTo(1, 1),
+            new Path\CurveTo(1, 0.55, 0.55, 1, 0, 1),
+            new Path\Close(1, 1),
         ];
-        $path->add($elements[0]);
+        $path->moveTo(1, 1);
         $this->assertCount(1, $path->getElements());
-        $path->add($elements[1]);
+        $path->lineTo(1, 0);
         $this->assertCount(2, $path->getElements());
-        $path->add($elements[2]);
+        $path->curveTo(1, 0.55, 0.55, 1, 0, 1);
         $this->assertCount(3, $path->getElements());
-        $path->add($elements[3]);
+        $path->close();
         $this->assertCount(4, $path->getElements());
 
-        $this->assertSame($elements, $path->getElements());
+        $this->assertEquals($elements, $path->getElements());
     }
 
     /**
@@ -76,5 +76,30 @@ class PathTest extends TestCase
         $this->assertEquals(4.5, $element->getControl2Y());
         $this->assertEquals(5.6, $element->getDestX());
         $this->assertEquals(6.7, $element->getDestY());
+    }
+
+    /**
+     */
+    public function testCloseLastMooveTo()
+    {
+        $path = new Path();
+        $path->moveTo(1, 2);
+        $path->moveTo(2, 3);
+        $path->moveTo(3, 4);
+        $path->close();
+
+        $elements = $path->getElements();
+        $this->assertCount(4, $elements);
+        $this->assertEquals(3, $elements[3]->getDestX());
+        $this->assertEquals(4, $elements[3]->getDestY());
+    }
+
+    /**
+     */
+    public function testFailCloseWithoutMoveTo()
+    {
+        $path = new Path();
+        $this->setExpectedException(\Exception::class);
+        $path->close();
     }
 }
