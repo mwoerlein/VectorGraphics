@@ -2,6 +2,7 @@
 namespace VectorGraphics\IO\SVG;
 
 use SimpleXMLElement;
+use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Graphic;
 use VectorGraphics\Model\Graphic\GraphicElement;
 use VectorGraphics\Model\Graphic\Viewport;
@@ -12,7 +13,7 @@ use VectorGraphics\Model\Shape;
 use VectorGraphics\Model\Shape\Circle;
 use VectorGraphics\Model\Shape\Rectangle;
 
-class SVGWriter
+class SVGWriter extends AbstractWriter
 {
     /**
      * @param Graphic $graphic
@@ -83,8 +84,9 @@ class SVGWriter
                 throw new \Exception("Unexpected");
             }
         }
+        $d .= "Z"; // TODO: always close path?
         $path = $svg->addChild("path");
-        $path->addAttribute("d", $d . "Z");
+        $path->addAttribute("d", $d);
         $this->addStyle($path, $shape);
         return $path;
     }
