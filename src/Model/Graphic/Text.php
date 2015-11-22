@@ -53,12 +53,6 @@ class Text extends AbstractText
      */
     public function setRotation($rotation)
     {
-        while ($rotation >= 360.) {
-            $rotation -= 360.;
-        }
-        while ($rotation < 0.) {
-            $rotation += 360.;
-        }
-        $this->rotation = $rotation;
+        $this->rotation = $this->normalizeDegree($rotation);
     }
 }

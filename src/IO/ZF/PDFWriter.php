@@ -29,7 +29,7 @@ class PDFWriter extends AbstractWriter
     const TEXT_DRAW_STROKE = 1;
     
     /** Fill the text only. Do not stroke. */
-    const TEXT_DRAW_FILL = 2;
+    const TEXT_DRAW_FILL = 0;
     
     /** Fill and stroke the text. */
     const TEXT_DRAW_FILL_AND_STROKE = 2;

@@ -6,8 +6,10 @@ use VectorGraphics\Model\Graphic\Text;
 use VectorGraphics\Model\Graphic\PathText;
 use VectorGraphics\Model\Path;
 use VectorGraphics\Model\Shape\Circle;
+use VectorGraphics\Model\Shape\RingArc;
 use VectorGraphics\Model\Shape\PathShape;
 use VectorGraphics\Model\Shape\Rectangle;
+use VectorGraphics\Utils\ArcUtils;
 
 class AbstractWriter
 {
@@ -186,5 +188,125 @@ class AbstractWriter
         $graphic->add($text);
         
         return $graphic;
+    }
+    
+    /**
+     * @return Graphic
+     *
+     * @deprecated just used for manual testing
+     */
+    public static function getSunburstGraphic()
+    {
+        $graphic = new Graphic();
+        $graphic->setViewportCorners(-300, -300, 300, 300);
+    
+    
+        $group = new PathShape(self::getGroupPath(275, 280, 1, 118));
+        $group->setStrokeColor("gray");
+        $graphic->add($group);
+        $text = new PathText("Meine Gruppe", self::getGroupPath(280, 280, 1, 118));
+        $text->setFontName(Text::FONT_HELVETICA);
+        $text->setFontSize(12);
+        $text->align(PathText::HORIZONTAL_ALIGN_MIDDLE, PathText::VERTICAL_ALIGN_BASE);
+        $graphic->add($text);
+    
+        $group = new PathShape(self::getGroupPath(275, 280, 121, 118));
+        $group->setStrokeColor("gray");
+        $graphic->add($group);
+        $text = new PathText("Meine andere Gruppe", self::getGroupPath(280, 280, 121, 118));
+        $text->setFontName(Text::FONT_HELVETICA);
+        $text->setFontSize(12);
+        $text->align(PathText::HORIZONTAL_ALIGN_MIDDLE, PathText::VERTICAL_ALIGN_BASE);
+        $graphic->add($text);
+    
+        $group = new PathShape(self::getGroupPath(275, 280, 241, 118));
+        $group->setStrokeColor("gray");
+        $graphic->add($group);
+        $text = new PathText("Meine dritte Gruppe", self::getGroupPath(280, 280, 241, 118));
+        $text->setFontName(Text::FONT_HELVETICA);
+        $text->setFontSize(12);
+        $text->align(PathText::HORIZONTAL_ALIGN_MIDDLE, PathText::VERTICAL_ALIGN_BASE);
+        $graphic->add($text);
+        
+        for($i=-4; $i<25; $i++) {
+            $arc = new RingArc(0, 0, 6 * $i + 50, 240, 15 * $i, 15);
+            $arc->setFillColor(static::rgb(236, 88, 85));
+            $arc->setStrokeColor("white");
+            $arc->setOpacity(($i+8)/32.);
+            $graphic->add($arc);
+    
+            list ($x, $y) = $arc->getPoint(RingArc::ALPHA_CENTRAL, RingArc::RADIUS_MIDDLE);
+            $text = new Text($i, $x, $y);
+            $text->align(Text::HORIZONTAL_ALIGN_MIDDLE, Text::VERTICAL_ALIGN_CENTRAL);
+            $text->setFontSize(12);
+            $text->setFontName(Text::FONT_HELVETICA);
+            $text->setFillColor("white");
+            $graphic->add($text);
+        }
+
+        $arc = new RingArc(0, 0, 240, 270, 0, 240);
+        $arc->setFillColor(static::rgb(81, 166, 74));
+        $arc->setStrokeColor("white");
+        $graphic->add($arc);
+        $arc = new RingArc(0, 0, 240, 270, 330, -30);
+        $arc->setFillColor(static::rgb(107, 178, 241));
+        $arc->setStrokeColor("white");
+        $graphic->add($arc);
+        $arc = new RingArc(0, 0, 240, 270, 330, 30);
+        $arc->setFillColor(static::rgb(69, 70, 77));
+        $arc->setStrokeColor("white");
+        $arc->setOpacity(0.3);
+        $graphic->add($arc);
+        
+        return $graphic;
+    }
+    
+    /**
+     * @param int $r
+     * @param int $g
+     * @param int $b
+     *
+     * @return string
+     */
+    private static function rgb($r, $g, $b) {
+        //String padding bug found and the solution put forth by Pete Williams (http://snipplr.com/users/PeteW)
+        $hex = "#";
+        $hex.= str_pad(dechex($r), 2, "0", STR_PAD_LEFT);
+        $hex.= str_pad(dechex($g), 2, "0", STR_PAD_LEFT);
+        $hex.= str_pad(dechex($b), 2, "0", STR_PAD_LEFT);
+        return $hex;
+    }
+    
+    /**
+     * @param float $r1
+     * @param float $r2
+     * @param float $alpha
+     * @param float $angle
+     *
+     * @return Path
+     */
+    private static function getGroupPath($r1, $r2, $alpha, $angle)
+    {
+        $path = new Path();
+        $radians = ArcUtils::getArcRadians($alpha, $angle);
+        file_put_contents("/tmp/log", json_encode($radians). "\n", FILE_APPEND);
+        $scale = ArcUtils::getScale($radians);
+        list ($sX, $sY) = ArcUtils::getPolarPoint($r2, $radians[0]);
+        list ($curX, $curY) = ArcUtils::getPolarPoint($r1, $radians[0]);
+        $path
+            ->moveTo($sX, $sY)
+            ->lineTo($curX, $curY);
+        $pos = 1;
+        while ($pos < count($radians)) {
+            list ($nextX, $nextY) = ArcUtils::getPolarPoint($r1, $radians[$pos++]);
+            list ($c1X, $c1Y) = ArcUtils::getBezierControl($curX, $curY, -$scale);
+            list ($c2X, $c2Y) = ArcUtils::getBezierControl($nextX, $nextY, $scale);
+            $path->curveTo($c1X, $c1Y, $c2X, $c2Y, $nextX, $nextY);
+            $curX = $nextX;
+            $curY = $nextY;
+        }
+        list ($eX, $eY) = ArcUtils::getPolarPoint($r2, end($radians));
+        $path->lineTo($eX, $eY);
+        return $path;
     }
 }

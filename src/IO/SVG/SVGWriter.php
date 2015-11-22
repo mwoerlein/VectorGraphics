@@ -129,10 +129,10 @@ class SVGWriter extends AbstractWriter
         $textPath->addAttribute('xmlns:xlink:href', "#$pathID");
         switch ($element->getHAlign()) {
             case AbstractText::HORIZONTAL_ALIGN_MIDDLE:
-                $textPath->addAttribute('startOffset', "50%");
+                $textPath->addAttribute('startOffset', 0.5);
                 break;
             case AbstractText::HORIZONTAL_ALIGN_RIGHT:
-                $textPath->addAttribute('startOffset', "100%");
+                $textPath->addAttribute('startOffset', 1);
                 break;
         }
         
