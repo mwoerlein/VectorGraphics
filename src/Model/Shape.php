@@ -5,15 +5,12 @@ use VectorGraphics\Model\Graphic\GraphicElement;
 
 abstract class Shape extends GraphicElement
 {
-    /** @var float */
-    private $opacity = 1;
-
     // TODO: extract fillStyle
     /** @var string */
     private $fillColor = null;
     /** @var float */
     private $fillOpacity = 1;
-
+    
     // TODO: extract strokeStyle
     /** @var float */
     private $strokeWidth = 1;
@@ -21,26 +18,7 @@ abstract class Shape extends GraphicElement
     private $strokeColor = "black";
     /** @var float */
     private $strokeOpacity = 1;
-
-    /**
-     * @return float
-     */
-    public function getOpacity()
-    {
-        return $this->opacity;
-    }
-
-    /**
-     * @param float $opacity
-     *
-     * @return $this
-     */
-    public function setOpacity($opacity)
-    {
-        $this->opacity = $opacity;
-        return $this;
-    }
-
+    
     /**
      * @return string|null
      */
@@ -48,7 +26,7 @@ abstract class Shape extends GraphicElement
     {
         return $this->fillColor;
     }
-
+    
     /**
      * @param string|null $fillColor
      *
@@ -59,7 +37,7 @@ abstract class Shape extends GraphicElement
         $this->fillColor = $fillColor;
         return $this;
     }
-
+    
     /**
      * @return float
      */
@@ -67,7 +45,7 @@ abstract class Shape extends GraphicElement
     {
         return $this->fillOpacity;
     }
-
+    
     /**
      * @param float $fillOpacity
      *
@@ -78,7 +56,7 @@ abstract class Shape extends GraphicElement
         $this->fillOpacity = $fillOpacity;
         return $this;
     }
-
+    
     /**
      * @return string|null
      */
@@ -86,7 +64,7 @@ abstract class Shape extends GraphicElement
     {
         return $this->strokeColor;
     }
-
+    
     /**
      * @param string|null $strokeColor
      *
@@ -97,7 +75,7 @@ abstract class Shape extends GraphicElement
         $this->strokeColor = $strokeColor;
         return $this;
     }
-
+    
     /**
      * @return float
      */
@@ -105,7 +83,7 @@ abstract class Shape extends GraphicElement
     {
         return $this->strokeWidth;
     }
-
+    
     /**
      * @param float $strokeWidth
      *
@@ -116,7 +94,7 @@ abstract class Shape extends GraphicElement
         $this->strokeWidth = $strokeWidth;
         return $this;
     }
-
+    
     /**
      * @return float
      */
@@ -124,7 +102,7 @@ abstract class Shape extends GraphicElement
     {
         return $this->strokeOpacity;
     }
-
+    
     /**
      * @param float $strokeOpacity
      *
@@ -135,7 +113,7 @@ abstract class Shape extends GraphicElement
         $this->strokeOpacity = $strokeOpacity;
         return $this;
     }
-
+    
     /**
      * @return Path
      */
