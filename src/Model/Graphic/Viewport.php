@@ -12,7 +12,7 @@ class Viewport extends Rectangle
     {
         return 2. * $this->getY() + $this->getHeight();
     }
-
+    
     /**
      * @return float
      */

@@ -8,13 +8,13 @@ class Circle extends Shape
 {
     /** @var float */
     private $x;
-
+    
     /** @var float */
     private $y;
-
+    
     /** @var float */
     private $radius;
-
+    
     /**
      * @param float $x
      * @param float $y
@@ -26,7 +26,7 @@ class Circle extends Shape
         $this->y = $y;
         $this->radius = $radius;
     }
-
+    
     /**
      * @return float
      */
@@ -34,7 +34,7 @@ class Circle extends Shape
     {
         return $this->x;
     }
-
+    
     /**
      * @return float
      */
@@ -42,7 +42,7 @@ class Circle extends Shape
     {
         return $this->y;
     }
-
+    
     /**
      * @return float
      */
@@ -50,7 +50,7 @@ class Circle extends Shape
     {
         return $this->radius;
     }
-
+    
     /**
      * @return Path
      */

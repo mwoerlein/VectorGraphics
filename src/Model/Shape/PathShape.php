@@ -8,7 +8,7 @@ class PathShape extends Shape
 {
     /** @var Path */
     private $path;
-
+    
     /**
      * @param Path $path
      */
@@ -16,7 +16,7 @@ class PathShape extends Shape
     {
         $this->path = $path;
     }
-
+    
     /**
      * @return Path
      */

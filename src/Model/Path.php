@@ -10,10 +10,10 @@ use VectorGraphics\Model\Path\PathElement;
 class Path {
     /** @var PathElement[] */
     private $elements = [];
-
+    
     /** @var MoveTo|null */
     private $lastMoveTo = null;
-
+    
     /**
      * @param float $x
      * @param float $y
@@ -35,7 +35,7 @@ class Path {
     {
         return $this->add(new LineTo($x, $y));
     }
-
+    
     /**
      * @param float $cx1
      * @param float $cy1
@@ -50,7 +50,7 @@ class Path {
     {
         return $this->add(new CurveTo($cx1, $cy1, $cx2, $cy2, $x, $y));
     }
-
+    
     /**
      * @return Path $this
      * @throws \Exception
@@ -65,7 +65,7 @@ class Path {
         $this->lastMoveTo = null;
         return $this;
     }
-
+    
     /**
      * @return PathElement[]
      */
@@ -73,7 +73,7 @@ class Path {
     {
         return $this->elements;
     }
-
+    
     /**
      * @param PathElement $element
      *

@@ -8,16 +8,16 @@ class Rectangle extends Shape
 {
     /** @var float */
     private $x;
-
+    
     /** @var float */
     private $y;
-
+    
     /** @var float */
     private $width;
-
+    
     /** @var float */
     private $height;
-
+    
     /**
      * @param float $x
      * @param float $y
@@ -31,7 +31,7 @@ class Rectangle extends Shape
         $this->width = $width;
         $this->height = $height;
     }
-
+    
     /**
      * @return float
      */
@@ -39,7 +39,7 @@ class Rectangle extends Shape
     {
         return $this->x;
     }
-
+    
     /**
      * @return float
      */
@@ -47,7 +47,7 @@ class Rectangle extends Shape
     {
         return $this->y;
     }
-
+    
     /**
      * @return float
      */
@@ -55,7 +55,7 @@ class Rectangle extends Shape
     {
         return $this->width;
     }
-
+    
     /**
      * @return float
      */
@@ -63,7 +63,7 @@ class Rectangle extends Shape
     {
         return $this->height;
     }
-
+    
     /**
      * @return Path
      */

@@ -8,15 +8,15 @@ class Graphic
 {
     /** @var GraphicElement[] */
     private $elements = [];
-
+    
     /** @var Viewport */
     private $viewport;
-
+    
     public function __construct()
     {
         $this->setViewportCorners(0., 0., 1000., 1000.);
     }
-
+    
     /**
      * @param GraphicElement $element
      *
@@ -26,7 +26,7 @@ class Graphic
         $this->elements[] = $element;
         return $this;
     }
-
+    
     /**
      * @return GraphicElement[]
      */
@@ -34,7 +34,7 @@ class Graphic
     {
         return $this->elements;
     }
-
+    
     /**
      * @return Viewport
      */
@@ -42,7 +42,7 @@ class Graphic
     {
         return $this->viewport;
     }
-
+    
     /**
      * @param Viewport $viewport
      *
@@ -52,7 +52,7 @@ class Graphic
         $this->viewport = $viewport;
         return $this;
     }
-
+    
     /**
      * @param float $x1
      * @param float $y1
