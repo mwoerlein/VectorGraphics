@@ -2,48 +2,44 @@
 namespace VectorGraphics\Model;
 
 use VectorGraphics\Model\Graphic\GraphicElement;
+use VectorGraphics\Model\Style\FillStyle;
+use VectorGraphics\Model\Style\HtmlColor;
+use VectorGraphics\Model\Style\StrokeStyle;
 
 abstract class Shape extends GraphicElement
 {
-    // TODO: extract fillStyle
-    /** @var string */
-    private $fillColor = null;
-    /** @var float */
-    private $fillOpacity = 1;
+    /** @var FillStyle */
+    private $fillStyle;
     
-    // TODO: extract strokeStyle
-    /** @var float */
-    private $strokeWidth = 1;
-    /** @var string */
-    private $strokeColor = "black";
-    /** @var float */
-    private $strokeOpacity = 1;
+    /** @var StrokeStyle */
+    private $strokeStyle;
     
     /**
-     * @return string|null
      */
-    public function getFillColor()
+    public function __construct()
     {
-        return $this->fillColor;
+        $this->fillStyle = new FillStyle(); // no fill
+        $this->strokeStyle = new StrokeStyle(1, "black", 1.); // black stroke
     }
     
     /**
-     * @param string|null $fillColor
+     * @return FillStyle
+     */
+    public function getFillStyle()
+    {
+        return $this->fillStyle;
+    }
+    
+    /**
+     * @param HtmlColor|string|null $fillColor
+     * @param float $fillOpacity
      *
      * @return $this
      */
-    public function setFillColor($fillColor)
+    public function setFillColor($fillColor, $fillOpacity = 1.)
     {
-        $this->fillColor = $fillColor;
+        $this->fillStyle->setColor($fillColor, $fillOpacity);
         return $this;
-    }
-    
-    /**
-     * @return float
-     */
-    public function getFillOpacity()
-    {
-        return $this->fillOpacity;
     }
     
     /**
@@ -53,35 +49,16 @@ abstract class Shape extends GraphicElement
      */
     public function setFillOpacity($fillOpacity)
     {
-        $this->fillOpacity = $fillOpacity;
+        $this->fillStyle->setOpacity($fillOpacity);
         return $this;
     }
     
     /**
-     * @return string|null
+     * @return StrokeStyle
      */
-    public function getStrokeColor()
+    public function getStrokeStyle()
     {
-        return $this->strokeColor;
-    }
-    
-    /**
-     * @param string|null $strokeColor
-     *
-     * @return $this
-     */
-    public function setStrokeColor($strokeColor)
-    {
-        $this->strokeColor = $strokeColor;
-        return $this;
-    }
-    
-    /**
-     * @return float
-     */
-    public function getStrokeWidth()
-    {
-        return $this->strokeWidth;
+        return $this->strokeStyle;
     }
     
     /**
@@ -91,16 +68,20 @@ abstract class Shape extends GraphicElement
      */
     public function setStrokeWidth($strokeWidth)
     {
-        $this->strokeWidth = $strokeWidth;
+        $this->strokeStyle->setWidth($strokeWidth);
         return $this;
     }
     
     /**
-     * @return float
+     * @param HtmlColor|string|null $strokeColor
+     * @param float $strokeOpacity
+     *
+     * @return $this
      */
-    public function getStrokeOpacity()
+    public function setStrokeColor($strokeColor, $strokeOpacity = 1.)
     {
-        return $this->strokeOpacity;
+        $this->strokeStyle->setColor($strokeColor, $strokeOpacity);
+        return $this;
     }
     
     /**
@@ -110,7 +91,7 @@ abstract class Shape extends GraphicElement
      */
     public function setStrokeOpacity($strokeOpacity)
     {
-        $this->strokeOpacity = $strokeOpacity;
+        $this->strokeStyle->setOpacity($strokeOpacity);
         return $this;
     }
     

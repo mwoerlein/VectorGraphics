@@ -9,6 +9,7 @@ use VectorGraphics\Model\Shape\Circle;
 use VectorGraphics\Model\Shape\RingArc;
 use VectorGraphics\Model\Shape\PathShape;
 use VectorGraphics\Model\Shape\Rectangle;
+use VectorGraphics\Model\Style\FontStyle;
 use VectorGraphics\Utils\ArcUtils;
 
 class AbstractWriter
@@ -28,7 +29,7 @@ class AbstractWriter
         $circ->setStrokeColor("yellow");
         $graphic->add($circ);
         $text = new Text("A", -40, 40);
-        $text->align(Text::HORIZONTAL_ALIGN_RIGHT, Text::VERTICAL_ALIGN_BASE);
+        $text->align(FontStyle::HORIZONTAL_ALIGN_RIGHT, FontStyle::VERTICAL_ALIGN_BASE);
         $text->setStrokeColor('red');
         $text->setStrokeWidth(1);
         $text->setFillOpacity(0.4);
@@ -38,12 +39,11 @@ class AbstractWriter
         $circ->setStrokeColor("yellow");
         $graphic->add($circ);
         $text = new Text("B", 40, 40);
-        $text->setFontName(Text::FONT_COURIER);
-        $text->align(Text::HORIZONTAL_ALIGN_LEFT, Text::VERTICAL_ALIGN_BOTTOM);
-        $text->setStrokeColor('red');
+        $text->setFontName(FontStyle::FONT_COURIER);
+        $text->align(FontStyle::HORIZONTAL_ALIGN_LEFT, FontStyle::VERTICAL_ALIGN_BOTTOM);
         $text->setFillColor('blue');
+        $text->setStrokeColor('red', 0.4);
         $text->setStrokeWidth(1);
-        $text->setStrokeOpacity(0.4);
         $text->setFontSize(80);
         $graphic->add($text);
         $circ = new Circle(-40, -40, 40);
@@ -56,9 +56,9 @@ class AbstractWriter
         $graphic->add($circ);
         
         $text = new Text("DaDa", 40, -40);
-        $text->setFontName(Text::FONT_HELVETICA);
+        $text->setFontName(FontStyle::FONT_HELVETICA);
         $text->setRotation(45);
-        $text->align(Text::HORIZONTAL_ALIGN_MIDDLE, Text::VERTICAL_ALIGN_CENTRAL);
+        $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_CENTRAL);
         $text->setStrokeColor('red');
         $text->setStrokeWidth(1);
         $text->setOpacity(0.4);
@@ -98,8 +98,7 @@ class AbstractWriter
         $graphic->add($rect);
         $rect = new Rectangle(0, -30, 30, 30);
         $rect->setFillColor("green");
-        $rect->setStrokeColor("blue");
-        $rect->setStrokeOpacity(0.5);
+        $rect->setStrokeColor("blue", 0.5);
         $graphic->add($rect);
         
         $radius = 80;
@@ -133,8 +132,7 @@ class AbstractWriter
         $path->close();
         
         $shape = new PathShape($path);
-        $shape->setFillColor("black");
-        $shape->setFillOpacity(0.3);
+        $shape->setFillColor("black", 0.3);
         
         $graphic->add($shape);
         
@@ -149,9 +147,8 @@ class AbstractWriter
         $path->close();
         
         $shape = new PathShape($path);
-        $shape->setStrokeColor("blue");
         $shape->setFillColor("black");
-        $shape->setStrokeOpacity(0.6);
+        $shape->setStrokeColor("blue", 0.6);
         $shape->setOpacity(0.6);
         
         $graphic->add($shape);
@@ -180,7 +177,7 @@ class AbstractWriter
         
         // just supported in svg-writer, yet
         $text = new PathText("Round and Round and Round and Round ...", $p1);
-        $text->align(Text::HORIZONTAL_ALIGN_MIDDLE, Text::VERTICAL_ALIGN_BOTTOM);
+        $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_BOTTOM);
         $text->setStrokeColor('red');
         $text->setStrokeWidth(.2);
         $text->setOpacity(0.4);
@@ -199,82 +196,64 @@ class AbstractWriter
     {
         $graphic = new Graphic();
         $graphic->setViewportCorners(-300, -300, 300, 300);
-    
-    
+        
         $group = new PathShape(self::getGroupPath(275, 280, 1, 118));
         $group->setStrokeColor("gray");
         $graphic->add($group);
         $text = new PathText("Meine Gruppe", self::getGroupPath(280, 280, 1, 118));
-        $text->setFontName(Text::FONT_HELVETICA);
         $text->setFontSize(12);
-        $text->align(PathText::HORIZONTAL_ALIGN_MIDDLE, PathText::VERTICAL_ALIGN_BASE);
+        $text->setFontName(FontStyle::FONT_HELVETICA);
+        $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_BASE);
         $graphic->add($text);
     
         $group = new PathShape(self::getGroupPath(275, 280, 121, 118));
         $group->setStrokeColor("gray");
         $graphic->add($group);
         $text = new PathText("Meine andere Gruppe", self::getGroupPath(280, 280, 121, 118));
-        $text->setFontName(Text::FONT_HELVETICA);
         $text->setFontSize(12);
-        $text->align(PathText::HORIZONTAL_ALIGN_MIDDLE, PathText::VERTICAL_ALIGN_BASE);
+        $text->setFontName(FontStyle::FONT_HELVETICA);
+        $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_BASE);
         $graphic->add($text);
     
         $group = new PathShape(self::getGroupPath(275, 280, 241, 118));
         $group->setStrokeColor("gray");
         $graphic->add($group);
         $text = new PathText("Meine dritte Gruppe", self::getGroupPath(280, 280, 241, 118));
-        $text->setFontName(Text::FONT_HELVETICA);
         $text->setFontSize(12);
-        $text->align(PathText::HORIZONTAL_ALIGN_MIDDLE, PathText::VERTICAL_ALIGN_BASE);
+        $text->setFontName(FontStyle::FONT_HELVETICA);
+        $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_BASE);
         $graphic->add($text);
         
         for($i=-4; $i<25; $i++) {
             $arc = new RingArc(0, 0, 6 * $i + 50, 240, 15 * $i, 15);
-            $arc->setFillColor(static::rgb(236, 88, 85));
+            $arc->setFillColor("rgb(236, 88, 85)");
             $arc->setStrokeColor("white");
             $arc->setOpacity(($i+8)/32.);
             $graphic->add($arc);
     
             list ($x, $y) = $arc->getPoint(RingArc::ALPHA_CENTRAL, RingArc::RADIUS_MIDDLE);
             $text = new Text($i, $x, $y);
-            $text->align(Text::HORIZONTAL_ALIGN_MIDDLE, Text::VERTICAL_ALIGN_CENTRAL);
             $text->setFontSize(12);
-            $text->setFontName(Text::FONT_HELVETICA);
+            $text->setFontName(FontStyle::FONT_HELVETICA);
+            $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_CENTRAL);
             $text->setFillColor("white");
             $graphic->add($text);
         }
 
         $arc = new RingArc(0, 0, 240, 270, 0, 240);
-        $arc->setFillColor(static::rgb(81, 166, 74));
+        $arc->setFillColor("rgb(81, 166, 74)");
         $arc->setStrokeColor("white");
         $graphic->add($arc);
         $arc = new RingArc(0, 0, 240, 270, 330, -30);
-        $arc->setFillColor(static::rgb(107, 178, 241));
+        $arc->setFillColor("rgb(107, 178, 241)");
         $arc->setStrokeColor("white");
         $graphic->add($arc);
         $arc = new RingArc(0, 0, 240, 270, 330, 30);
-        $arc->setFillColor(static::rgb(69, 70, 77));
+        $arc->setFillColor("rgb(69, 70, 77)", 0.3);
         $arc->setStrokeColor("white");
-        $arc->setOpacity(0.3);
         $graphic->add($arc);
         
         return $graphic;
-    }
-    
-    /**
-     * @param int $r
-     * @param int $g
-     * @param int $b
-     *
-     * @return string
-     */
-    private static function rgb($r, $g, $b) {
-        //String padding bug found and the solution put forth by Pete Williams (http://snipplr.com/users/PeteW)
-        $hex = "#";
-        $hex.= str_pad(dechex($r), 2, "0", STR_PAD_LEFT);
-        $hex.= str_pad(dechex($g), 2, "0", STR_PAD_LEFT);
-        $hex.= str_pad(dechex($b), 2, "0", STR_PAD_LEFT);
-        return $hex;
     }
     
     /**
@@ -289,7 +268,6 @@ class AbstractWriter
     {
         $path = new Path();
         $radians = ArcUtils::getArcRadians($alpha, $angle);
-        file_put_contents("/tmp/log", json_encode($radians). "\n", FILE_APPEND);
         $scale = ArcUtils::getScale($radians);
         list ($sX, $sY) = ArcUtils::getPolarPoint($r2, $radians[0]);
         list ($curX, $curY) = ArcUtils::getPolarPoint($r1, $radians[0]);

@@ -22,6 +22,7 @@ class Circle extends Shape
      */
     public function __construct($x, $y, $radius)
     {
+        parent::__construct();
         $this->x = $x;
         $this->y = $y;
         $this->radius = $radius;

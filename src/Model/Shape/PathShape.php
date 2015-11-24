@@ -14,6 +14,7 @@ class PathShape extends Shape
      */
     public function __construct(Path $path)
     {
+        parent::__construct();
         $this->path = $path;
     }
     

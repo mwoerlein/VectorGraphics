@@ -43,6 +43,7 @@ class RingArc extends Shape
      */
     public function __construct($x, $y, $innerRadius, $outerRadius, $alpha = 0., $angle = 360.)
     {
+        parent::__construct();
         $this->x = $x;
         $this->y = $y;
         $this->innerRadius = $innerRadius;

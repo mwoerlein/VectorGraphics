@@ -1,61 +1,41 @@
 <?php
 namespace VectorGraphics\Model\Graphic;
 
+use VectorGraphics\Model\Style\FillStyle;
+use VectorGraphics\Model\Style\FontStyle;
+use VectorGraphics\Model\Style\HtmlColor;
+use VectorGraphics\Model\Style\StrokeStyle;
+
 class AbstractText extends GraphicElement
 {
-    const FONT_COURIER = "Courier";
-    const FONT_HELVETICA = "Helvetica";
-    const FONT_TIMES = "Times";
-    
-    const FONT_STYLE_NORMAL = "normal";
-    const FONT_STYLE_BOLD = "bold";
-    const FONT_STYLE_ITALIC = "italic";
-    const FONT_STYLE_BOLD_ITALIC = "bold-italic";
-    
-    const HORIZONTAL_ALIGN_LEFT = 'left';
-    const HORIZONTAL_ALIGN_MIDDLE = 'middle';
-    const HORIZONTAL_ALIGN_RIGHT = 'right';
-    
-    const VERTICAL_ALIGN_TOP = 'top';
-    const VERTICAL_ALIGN_CENTRAL = 'central';
-    const VERTICAL_ALIGN_BASE = 'base';
-    const VERTICAL_ALIGN_BOTTOM = 'bottom';
     
     /** @var string */
     private $text;
     
-    // TODO: extract textStyle
-    /** @var string  */
-    private $fontName = self::FONT_TIMES;
-    /** @var string */
-    private $fontStyle = self::FONT_STYLE_NORMAL;
-    /** @var int */
-    private $fontSize = 12;
-    /** @var string */
-    private $hAlign = self::HORIZONTAL_ALIGN_LEFT;
-    /** @var string */
-    private $vAlign = self::VERTICAL_ALIGN_BASE;
+    /** @var FontStyle */
+    private $fontStyle;
     
-    // TODO: extract fillStyle
-    /** @var string */
-    private $fillColor = 'black';
-    /** @var float */
-    private $fillOpacity = 1;
+    /** @var FillStyle */
+    private $fillStyle;
     
-    // TODO: extract strokeStyle
-    /** @var float */
-    private $strokeWidth = 0;
-    /** @var string */
-    private $strokeColor = 'black';
-    /** @var float */
-    private $strokeOpacity = 1;
+    /** @var StrokeStyle */
+    private $strokeStyle;
     
     /**
      * @param string $text
      */
     public function __construct($text)
     {
-        $this->text = str_replace(["\r\n", "\r", "\n"], '', $text);
+        $this->text = str_replace(["\r\n", "\r", "\n"], '', $text); // ignore newlines
+        $this->fontStyle = new FontStyle( // 12 Points Times, left aligned
+            12,
+            FontStyle::FONT_TIMES,
+            FontStyle::FONT_STYLE_NORMAL,
+            FontStyle::HORIZONTAL_ALIGN_LEFT,
+            FontStyle::VERTICAL_ALIGN_BASE
+        );
+        $this->fillStyle = new FillStyle("black", 1.); // black fill
+        $this->strokeStyle = new StrokeStyle(); // no stroke
     }
     
     /**
@@ -67,23 +47,7 @@ class AbstractText extends GraphicElement
     }
     
     /**
-     * @return string
-     */
-    public function getFontName()
-    {
-        return $this->fontName;
-    }
-    
-    /**
-     * @param string $fontName
-     */
-    public function setFontName($fontName)
-    {
-        $this->fontName = $fontName;
-    }
-    
-    /**
-     * @return string
+     * @return FontStyle
      */
     public function getFontStyle()
     {
@@ -91,80 +55,68 @@ class AbstractText extends GraphicElement
     }
     
     /**
-     * @param string $fontStyle
+     * @param string $fontName
+     *
+     * @return $this
      */
-    public function setFontStyle($fontStyle)
+    public function setFontName($fontName)
     {
-        $this->fontStyle = $fontStyle;
+        $this->fontStyle->setName($fontName);
+        return $this;
     }
     
     /**
-     * @return int
+     * @param string $fontStyle
+     *
+     * @return $this
      */
-    public function getFontSize()
+    public function setFontStyle($fontStyle)
     {
-        return $this->fontSize;
+        $this->fontStyle->setStyle($fontStyle);
+        return $this;
     }
     
     /**
      * @param int $fontSize
+     *
+     * @return $this
      */
     public function setFontSize($fontSize)
     {
-        $this->fontSize = $fontSize;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getHAlign()
-    {
-        return $this->hAlign;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getVAlign()
-    {
-        return $this->vAlign;
+        $this->fontStyle->setSize($fontSize);
+        return $this;
     }
     
     /**
      * @param string $hAlign
      * @param string $vAlign
-     */
-    public function align($hAlign = self::HORIZONTAL_ALIGN_LEFT, $vAlign = self::VERTICAL_ALIGN_BASE)
-    {
-        $this->hAlign = $hAlign;
-        $this->vAlign = $vAlign;
-    }
-    
-    /**
-     * @return string|null
-     */
-    public function getFillColor()
-    {
-        return $this->fillColor;
-    }
-    
-    /**
-     * @param string|null $fillColor
      *
      * @return $this
      */
-    public function setFillColor($fillColor)
+    public function align($hAlign = FontStyle::HORIZONTAL_ALIGN_LEFT, $vAlign = FontStyle::VERTICAL_ALIGN_BASE)
     {
-        $this->fillColor = $fillColor;
+        $this->fontStyle->align($hAlign, $vAlign);
         return $this;
     }
     
     /**
-     * @return float
+     * @return FillStyle
      */
-    public function getFillOpacity()
+    public function getFillStyle()
     {
-        return $this->fillOpacity;
+        return $this->fillStyle;
+    }
+    
+    /**
+     * @param HtmlColor|string|null $fillColor
+     * @param float $fillOpacity
+     *
+     * @return $this
+     */
+    public function setFillColor($fillColor, $fillOpacity = 1.)
+    {
+        $this->fillStyle->setColor($fillColor, $fillOpacity);
+        return $this;
     }
     
     /**
@@ -174,35 +126,16 @@ class AbstractText extends GraphicElement
      */
     public function setFillOpacity($fillOpacity)
     {
-        $this->fillOpacity = $fillOpacity;
+        $this->fillStyle->setOpacity($fillOpacity);
         return $this;
     }
     
     /**
-     * @return string|null
+     * @return StrokeStyle
      */
-    public function getStrokeColor()
+    public function getStrokeStyle()
     {
-        return $this->strokeColor;
-    }
-    
-    /**
-     * @param string|null $strokeColor
-     *
-     * @return $this
-     */
-    public function setStrokeColor($strokeColor)
-    {
-        $this->strokeColor = $strokeColor;
-        return $this;
-    }
-    
-    /**
-     * @return float
-     */
-    public function getStrokeWidth()
-    {
-        return $this->strokeWidth;
+        return $this->strokeStyle;
     }
     
     /**
@@ -212,16 +145,20 @@ class AbstractText extends GraphicElement
      */
     public function setStrokeWidth($strokeWidth)
     {
-        $this->strokeWidth = $strokeWidth;
+        $this->strokeStyle->setWidth($strokeWidth);
         return $this;
     }
     
     /**
-     * @return float
+     * @param HtmlColor|string|null $strokeColor
+     * @param float $strokeOpacity
+     *
+     * @return $this
      */
-    public function getStrokeOpacity()
+    public function setStrokeColor($strokeColor, $strokeOpacity = 1.)
     {
-        return $this->strokeOpacity;
+        $this->strokeStyle->setColor($strokeColor, $strokeOpacity);
+        return $this;
     }
     
     /**
@@ -231,7 +168,7 @@ class AbstractText extends GraphicElement
      */
     public function setStrokeOpacity($strokeOpacity)
     {
-        $this->strokeOpacity = $strokeOpacity;
+        $this->strokeStyle->setOpacity($strokeOpacity);
         return $this;
     }
 }

@@ -1,10 +1,8 @@
 <?php
 namespace VectorGraphics\IO\ZF;
 
-use InvalidArgumentException;
 use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Graphic;
-use VectorGraphics\Model\Graphic\AbstractText;
 use VectorGraphics\Model\Graphic\Text;
 use VectorGraphics\Model\Graphic\PathText;
 use VectorGraphics\Model\Graphic\Viewport;
@@ -14,6 +12,10 @@ use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\LineTo;
 use VectorGraphics\Model\Path\MoveTo;
 use VectorGraphics\Model\Shape;
+use VectorGraphics\Model\Style\FillStyle;
+use VectorGraphics\Model\Style\FontStyle;
+use VectorGraphics\Model\Style\HtmlColor;
+use VectorGraphics\Model\Style\StrokeStyle;
 use VectorGraphics\Utils\TextUtils;
 use ZendPdf\Color\ColorInterface as ZendColor;
 use ZendPdf\Color\Html as ZendHtmlColor;
@@ -50,23 +52,23 @@ class PDFWriter extends AbstractWriter
     }
     
     private $fontMap = [
-        AbstractText::FONT_COURIER => [
-            AbstractText::FONT_STYLE_NORMAL => ZendFont::FONT_COURIER,
-            AbstractText::FONT_STYLE_BOLD => ZendFont::FONT_COURIER_BOLD,
-            AbstractText::FONT_STYLE_ITALIC => ZendFont::FONT_COURIER_ITALIC,
-            AbstractText::FONT_STYLE_BOLD_ITALIC => ZendFont::FONT_COURIER_BOLD_ITALIC,
+        FontStyle::FONT_COURIER => [
+            FontStyle::FONT_STYLE_NORMAL => ZendFont::FONT_COURIER,
+            FontStyle::FONT_STYLE_BOLD => ZendFont::FONT_COURIER_BOLD,
+            FontStyle::FONT_STYLE_ITALIC => ZendFont::FONT_COURIER_ITALIC,
+            FontStyle::FONT_STYLE_BOLD_ITALIC => ZendFont::FONT_COURIER_BOLD_ITALIC,
         ],
-        AbstractText::FONT_HELVETICA => [
-            AbstractText::FONT_STYLE_NORMAL => ZendFont::FONT_HELVETICA,
-            AbstractText::FONT_STYLE_BOLD => ZendFont::FONT_HELVETICA_BOLD,
-            AbstractText::FONT_STYLE_ITALIC => ZendFont::FONT_HELVETICA_ITALIC,
-            AbstractText::FONT_STYLE_BOLD_ITALIC => ZendFont::FONT_HELVETICA_BOLD_ITALIC,
+        FontStyle::FONT_HELVETICA => [
+            FontStyle::FONT_STYLE_NORMAL => ZendFont::FONT_HELVETICA,
+            FontStyle::FONT_STYLE_BOLD => ZendFont::FONT_HELVETICA_BOLD,
+            FontStyle::FONT_STYLE_ITALIC => ZendFont::FONT_HELVETICA_ITALIC,
+            FontStyle::FONT_STYLE_BOLD_ITALIC => ZendFont::FONT_HELVETICA_BOLD_ITALIC,
         ],
-        AbstractText::FONT_TIMES => [
-            AbstractText::FONT_STYLE_NORMAL => ZendFont::FONT_TIMES,
-            AbstractText::FONT_STYLE_BOLD => ZendFont::FONT_TIMES_BOLD,
-            AbstractText::FONT_STYLE_ITALIC => ZendFont::FONT_TIMES_ITALIC,
-            AbstractText::FONT_STYLE_BOLD_ITALIC => ZendFont::FONT_TIMES_BOLD_ITALIC,
+        FontStyle::FONT_TIMES => [
+            FontStyle::FONT_STYLE_NORMAL => ZendFont::FONT_TIMES,
+            FontStyle::FONT_STYLE_BOLD => ZendFont::FONT_TIMES_BOLD,
+            FontStyle::FONT_STYLE_ITALIC => ZendFont::FONT_TIMES_ITALIC,
+            FontStyle::FONT_STYLE_BOLD_ITALIC => ZendFont::FONT_TIMES_BOLD_ITALIC,
         ],
     ];
     
@@ -153,29 +155,30 @@ class PDFWriter extends AbstractWriter
      */
     private function drawShape(ZendPage $page, Shape $shape)
     {
-        $filled = $shape->getFillColor() !== null && $shape->getFillOpacity() > 0;
-        $stroked = $shape->getStrokeColor() !== null && $shape->getStrokeOpacity() > 0 && $shape->getStrokeWidth() > 0;
-        if ($shape->getOpacity() === 0 || (!$filled && !$stroked)) {
+        $fillStyle = $shape->getFillStyle();
+        $strokeStyle = $shape->getStrokeStyle();
+        if ($shape->getOpacity() === 0 || (!$fillStyle->isVisible() && !$strokeStyle->isVisible())) {
             // not visible => do nothing
             return;
         }
+        
         $path = $shape->getPath();
-        if (!$filled) {
-            $this->setLineStyle($page, $shape, $shape->getOpacity());
+        if (!$fillStyle->isVisible()) {
+            $this->setLineStyle($page, $strokeStyle, $shape->getOpacity());
             $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
-        } elseif (!$stroked) {
-            $this->setFillStyle($page, $shape, $shape->getOpacity());
+        } elseif (!$strokeStyle->isVisible()) {
+            $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
             $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
-        } elseif ($shape->getFillOpacity() !== 1 || $shape->getStrokeOpacity() !== 1) {
+        } elseif ($fillStyle->getOpacity() !== 1 || $strokeStyle->getOpacity() !== 1) {
             // separate fill and stroke to emulate correct alpha behavior
-            $this->setFillStyle($page, $shape, $shape->getOpacity());
+            $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
             $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
             
-            $this->setLineStyle($page, $shape, $shape->getOpacity());
+            $this->setLineStyle($page, $strokeStyle, $shape->getOpacity());
             $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
         } else {
-            $this->setLineStyle($page, $shape);
-            $this->setFillStyle($page, $shape);
+            $this->setLineStyle($page, $strokeStyle);
+            $this->setFillStyle($page, $fillStyle);
             $page->setAlpha($shape->getOpacity());
             $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_FILL_AND_STROKE);
         }
@@ -244,9 +247,13 @@ class PDFWriter extends AbstractWriter
      */
     private function drawText(ZendPage $page, Text $element)
     {
-        $filled = $element->getFillColor() !== null && $element->getFillOpacity() > 0;
-        $stroked = $element->getStrokeColor() !== null && $element->getStrokeOpacity() > 0 && $element->getStrokeWidth() > 0;
-        if ($element->getOpacity() === 0 || (!$filled && !$stroked)) {
+        $fillStyle = $element->getFillStyle();
+        $strokeStyle = $element->getStrokeStyle();
+        $fontStyle = $element->getFontStyle();
+        if (
+            $element->getOpacity() === 0
+            || !$fontStyle->isVisible()
+            || (!$fillStyle->isVisible() && !$strokeStyle->isVisible())) {
             // not visible => do nothing
             return;
         }
@@ -256,29 +263,29 @@ class PDFWriter extends AbstractWriter
             $page->rotate($element->getX(), $element->getY(), -$element->getRotation() / 180. * pi());
         }
         
-        $font = $this->getZendFont($element->getFontName(), $element->getFontStyle());
-        $fontSize = $element->getFontSize();
-        $page->setFont($font, $fontSize);
-        
+        /** @var float $x */
+        /** @var float $y */
+        /** @var ZendAbstractFont $font */
+        list($x, $y, $font) = $this->computeTextAnchor($element);
+        $page->setFont($font, $fontStyle->getSize());
         $encodedText = $font->encodeString($element->getText(), 'UTF-8');
-        list($x, $y) = $this->computeTextAnchor($element, $font, $fontSize);
         
-        if (!$filled) {
-            $this->setLineStyle($page, $element, $element->getOpacity());
+        if (!$fillStyle->isVisible()) {
+            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
             $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
-        } elseif (!$stroked) {
-            $this->setFillStyle($page, $element, $element->getOpacity());
+        } elseif (!$strokeStyle->isVisible()) {
+            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
             $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
-        } elseif ($element->getFillOpacity() !== 1 || $element->getStrokeOpacity() !== 1) {
+        } elseif ($fillStyle->getOpacity() !== 1 || $strokeStyle->getOpacity() !== 1) {
             // separate fill and stroke to emulate correct alpha behavior
-            $this->setFillStyle($page, $element, $element->getOpacity());
+            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
             $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
             
-            $this->setLineStyle($page, $element, $element->getOpacity());
+            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
             $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
         } else {
-            $this->setLineStyle($page, $element);
-            $this->setFillStyle($page, $element);
+            $this->setLineStyle($page, $strokeStyle);
+            $this->setFillStyle($page, $fillStyle);
             $page->setAlpha($element->getOpacity());
             $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL_AND_STROKE);
         }
@@ -287,38 +294,38 @@ class PDFWriter extends AbstractWriter
     
     /**
      * @param Text $element
-     * @param ZendAbstractFont $font
-     * @param int $fontSize
      *
-     * @return float[] [$x, $y]
+     * @return mixed[] [float $x, float $y, ZendAbstractFont $font]
      */
-    private function computeTextAnchor(Text $element, ZendAbstractFont $font, $fontSize)
+    private function computeTextAnchor(Text $element)
     {
-        $scale = (float) $fontSize / (float) $font->getUnitsPerEm();
+        $fontStyle = $element->getFontStyle();
+        $font = $this->getZendFont($fontStyle);
+        $scale = $fontStyle->getSize() / (float) $font->getUnitsPerEm();
         $x = $element->getX();
         $y = $element->getY();
-        switch ($element->getHAlign()) {
-            case AbstractText::HORIZONTAL_ALIGN_MIDDLE:
+        switch ($fontStyle->getHAlign()) {
+            case FontStyle::HORIZONTAL_ALIGN_MIDDLE:
                 $glyphNumbers = $font->glyphNumbersForCharacters(TextUtils::getOrds($element->getText()));
                 $x -= 0.5 * $scale * array_sum($font->widthsForGlyphs($glyphNumbers));
                 break;
-            case AbstractText::HORIZONTAL_ALIGN_RIGHT:
+            case FontStyle::HORIZONTAL_ALIGN_RIGHT:
                 $glyphNumbers = $font->glyphNumbersForCharacters(TextUtils::getOrds($element->getText()));
                 $x -= $scale * array_sum($font->widthsForGlyphs($glyphNumbers));
                 break;
         }
-        switch ($element->getVAlign()) {
-            case AbstractText::VERTICAL_ALIGN_TOP:
+        switch ($fontStyle->getVAlign()) {
+            case FontStyle::VERTICAL_ALIGN_TOP:
                 $y -= $scale * ($font->getAscent() - $font->getDescent());
                 break;
-            case AbstractText::VERTICAL_ALIGN_CENTRAL:
+            case FontStyle::VERTICAL_ALIGN_CENTRAL:
                 $y -= 0.5 * $scale * $font->getAscent();
                 break;
-            case AbstractText::VERTICAL_ALIGN_BOTTOM:
+            case FontStyle::VERTICAL_ALIGN_BOTTOM:
                 $y -= $scale * ($font->getDescent() + $font->getDescent());
                 break;
         }
-        return [$x, $y];
+        return [$x, $y, $font];
     }
     
     /**
@@ -347,65 +354,53 @@ class PDFWriter extends AbstractWriter
     
     /**
      * @param ZendPage $page
-     * @param Shape|AbstractText $shape
+     * @param StrokeStyle $strokeStyle
      * @param float|null $opacity
      */
-    private function setLineStyle(ZendPage $page, $shape, $opacity = null)
+    private function setLineStyle(ZendPage $page, StrokeStyle $strokeStyle, $opacity = null)
     {
-        $page->setLineWidth($shape->getStrokeWidth());
-        $page->setLineColor($this->getZendColor($shape->getStrokeColor()));
+        $page->setLineWidth($strokeStyle->getWidth());
+        $page->setLineColor($this->getZendColor($strokeStyle->getColor()));
         if ($opacity !== null) {
-            $page->setAlpha($opacity * $shape->getStrokeOpacity());
+            $page->setAlpha($opacity * $strokeStyle->getOpacity());
         }
     }
     
     /**
      * @param ZendPage $page
-     * @param Shape|AbstractText $shape
+     * @param FillStyle $fillStyle
      * @param float|null $opacity
      */
-    private function setFillStyle(ZendPage $page, $shape, $opacity = null)
+    private function setFillStyle(ZendPage $page, FillStyle $fillStyle, $opacity = null)
     {
-        $page->setFillColor($this->getZendColor($shape->getFillColor()));
+        $page->setFillColor($this->getZendColor($fillStyle->getColor()));
         if ($opacity !== null) {
-            $page->setAlpha($opacity * $shape->getFillOpacity());
+            $page->setAlpha($opacity * $fillStyle->getOpacity());
         }
     }
     
     /**
-     * @param $colorData
+     * @param HtmlColor $color
      *
      * @return ZendColor
-     * @throws InvalidArgumentException
      */
-    private function getZendColor($colorData)
+    private function getZendColor(HtmlColor $color)
     {
-        if(is_string($colorData))
-        {
-            return ZendHtmlColor::color($colorData);
-        }
-        
-        if(!$colorData instanceof ZendColor)
-        {
-            throw new InvalidArgumentException('Wrong color value, expected string or object of ' . ZendColor::class . ' class.');
-        }
-        
-        return $colorData;
+        return ZendHtmlColor::color($color->__toString());
     }
     
     /**
-     * @param string $fontName
-     * @param string $fontStyle
+     * @param string|FontStyle $fontStyle
      *
      * @return ZendAbstractFont
      * @throws \Exception
      */
-    protected function getZendFont($fontName, $fontStyle = AbstractText::FONT_STYLE_NORMAL)
+    protected function getZendFont(FontStyle $fontStyle)
     {
-        if (!isset($this->fontMap[$fontName][$fontStyle])) {
+        if (!isset($this->fontMap[$fontStyle->getName()][$fontStyle->getStyle()])) {
             // TODO: cleanup exceptions
-            throw new \Exception('Font not fount: ' . $fontName . '/' . $fontStyle);
+            throw new \Exception('Font not fount: ' . $fontStyle);
         }
-        return ZendFont::fontWithName($this->fontMap[$fontName][$fontStyle]);
+        return ZendFont::fontWithName($this->fontMap[$fontStyle->getName()][$fontStyle->getStyle()]);
     }
 }

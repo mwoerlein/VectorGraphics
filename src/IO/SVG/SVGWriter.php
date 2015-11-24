@@ -17,6 +17,9 @@ use VectorGraphics\Model\Path\MoveTo;
 use VectorGraphics\Model\Shape;
 use VectorGraphics\Model\Shape\Circle;
 use VectorGraphics\Model\Shape\Rectangle;
+use VectorGraphics\Model\Style\FillStyle;
+use VectorGraphics\Model\Style\FontStyle;
+use VectorGraphics\Model\Style\StrokeStyle;
 
 class SVGWriter extends AbstractWriter
 {
@@ -127,11 +130,11 @@ class SVGWriter extends AbstractWriter
         
         $textPath = $group->addChild("text")->addChild("textPath");
         $textPath->addAttribute('xmlns:xlink:href', "#$pathID");
-        switch ($element->getHAlign()) {
-            case AbstractText::HORIZONTAL_ALIGN_MIDDLE:
+        switch ($element->getFontStyle()->getHAlign()) {
+            case FontStyle::HORIZONTAL_ALIGN_MIDDLE:
                 $textPath->addAttribute('startOffset', 0.5);
                 break;
-            case AbstractText::HORIZONTAL_ALIGN_RIGHT:
+            case FontStyle::HORIZONTAL_ALIGN_RIGHT:
                 $textPath->addAttribute('startOffset', 1);
                 break;
         }
@@ -215,87 +218,101 @@ class SVGWriter extends AbstractWriter
      */
     private function addShapeStyle(SimpleXMLElement $element, Shape $shape)
     {
-        if ($shape->getFillColor() !== null && $shape->getFillOpacity() > 0) {
-            $element->addAttribute("fill", $shape->getFillColor());
-            $element->addAttribute("fill-opacity", $shape->getFillOpacity());
-            $element->addAttribute("fill-rule", "evenodd");
-        } else {
-            $element->addAttribute("fill", "none");
-        }
-        if ($shape->getStrokeColor() !== null && $shape->getStrokeOpacity() > 0 && $shape->getStrokeWidth() > 0) {
-            $element->addAttribute("stroke", $shape->getStrokeColor());
-            $element->addAttribute("stroke-opacity", $shape->getStrokeOpacity());
-            $element->addAttribute("stroke-width", $shape->getStrokeWidth());
-        } else {
-            $element->addAttribute("stroke", "none");
-        }
+        $this->addFillStyle($element, $shape->getFillStyle());
+        $this->addStrokeStyle($element, $shape->getStrokeStyle());
         if ($shape->getOpacity() < 1) {
             $element->addAttribute("opacity", $shape->getOpacity());
         }
     }
-    
     /**
      * @param SimpleXMLElement $element
      * @param AbstractText $text
      */
     private function addTextStyle(SimpleXMLElement $element, AbstractText $text)
     {
-        $element->addAttribute("font-family", $text->getFontName() . ', sans-serif');
-        $element->addAttribute("font-size", $text->getFontSize());
-        switch ($text->getFontStyle()) {
-            case AbstractText::FONT_STYLE_BOLD:
-                $element->addAttribute("font-weight", 'bold');
-                break;
-            case AbstractText::FONT_STYLE_ITALIC:
-                $element->addAttribute("font-style", 'italic');
-                break;
-            case AbstractText::FONT_STYLE_BOLD_ITALIC:
-                $element->addAttribute("font-weight", 'bold');
-                $element->addAttribute("font-style", 'italic');
-                break;
-        }
-        switch ($text->getHAlign()) {
-            case AbstractText::HORIZONTAL_ALIGN_LEFT:
-                $element->addAttribute("text-anchor", "start");
-                break;
-            case AbstractText::HORIZONTAL_ALIGN_MIDDLE:
-                $element->addAttribute("text-anchor", "middle");
-                break;
-            case AbstractText::HORIZONTAL_ALIGN_RIGHT:
-                $element->addAttribute("text-anchor", "end");
-                break;
-        }
-        switch ($text->getVAlign()) {
-            case AbstractText::VERTICAL_ALIGN_TOP:
-                $element->addAttribute("alignment-baseline", "text-before-edge");
-                break;
-            case AbstractText::VERTICAL_ALIGN_CENTRAL:
-                $element->addAttribute("alignment-baseline", "central");
-                break;
-            case AbstractText::VERTICAL_ALIGN_BASE:
-                $element->addAttribute("alignment-baseline", "alphabetic");
-                break;
-            case AbstractText::VERTICAL_ALIGN_BOTTOM:
-                $element->addAttribute("alignment-baseline", "text-after-edge");
-                break;
+        $this->addFontStyle($element, $text->getFontStyle());
+        $this->addFillStyle($element, $text->getFillStyle());
+        $this->addStrokeStyle($element, $text->getStrokeStyle());
+        if ($text->getOpacity() < 1) {
+            $element->addAttribute("opacity", $text->getOpacity());
         }
         
-        if ($text->getFillColor() !== null && $text->getFillOpacity() > 0) {
-            $element->addAttribute("fill", $text->getFillColor());
-            $element->addAttribute("fill-opacity", $text->getFillOpacity());
+    }
+    
+    /**
+     * @param SimpleXMLElement $element
+     * @param FillStyle $fillStyle
+     */
+    private function addFillStyle(SimpleXMLElement $element, FillStyle $fillStyle)
+    {
+        if ($fillStyle->isVisible()) {
+            $element->addAttribute("fill", $fillStyle->getColor());
+            $element->addAttribute("fill-opacity", $fillStyle->getOpacity());
             $element->addAttribute("fill-rule", "evenodd");
         } else {
             $element->addAttribute("fill", "none");
         }
-        if ($text->getStrokeColor() !== null && $text->getStrokeOpacity() > 0 && $text->getStrokeWidth() > 0) {
-            $element->addAttribute("stroke", $text->getStrokeColor());
-            $element->addAttribute("stroke-opacity", $text->getStrokeOpacity());
-            $element->addAttribute("stroke-width", $text->getStrokeWidth());
+    }
+    
+    /**
+     * @param SimpleXMLElement $element
+     * @param StrokeStyle $strokeStyle
+     */
+    private function addStrokeStyle(SimpleXMLElement $element, StrokeStyle $strokeStyle)
+    {
+        if ($strokeStyle->isVisible()) {
+            $element->addAttribute("stroke", $strokeStyle->getColor());
+            $element->addAttribute("stroke-opacity", $strokeStyle->getOpacity());
+            $element->addAttribute("stroke-width", $strokeStyle->getWidth());
         } else {
             $element->addAttribute("stroke", "none");
         }
-        if ($text->getOpacity() < 1) {
-            $element->addAttribute("opacity", $text->getOpacity());
+    }
+    
+    /**
+     * @param SimpleXMLElement $element
+     * @param FontStyle $fontStyle
+     */
+    private function addFontStyle(SimpleXMLElement $element, FontStyle $fontStyle)
+    {
+        $element->addAttribute("font-family", $fontStyle->getName() . ', sans-serif');
+        $element->addAttribute("font-size", $fontStyle->getSize());
+        switch ($fontStyle->getStyle()) {
+            case FontStyle::FONT_STYLE_BOLD:
+                $element->addAttribute("font-weight", 'bold');
+                break;
+            case FontStyle::FONT_STYLE_ITALIC:
+                $element->addAttribute("font-style", 'italic');
+                break;
+            case FontStyle::FONT_STYLE_BOLD_ITALIC:
+                $element->addAttribute("font-weight", 'bold');
+                $element->addAttribute("font-style", 'italic');
+                break;
+        }
+        switch ($fontStyle->getHAlign()) {
+            case FontStyle::HORIZONTAL_ALIGN_LEFT:
+                $element->addAttribute("text-anchor", "start");
+                break;
+            case FontStyle::HORIZONTAL_ALIGN_MIDDLE:
+                $element->addAttribute("text-anchor", "middle");
+                break;
+            case FontStyle::HORIZONTAL_ALIGN_RIGHT:
+                $element->addAttribute("text-anchor", "end");
+                break;
+        }
+        switch ($fontStyle->getVAlign()) {
+            case FontStyle::VERTICAL_ALIGN_TOP:
+                $element->addAttribute("alignment-baseline", "text-before-edge");
+                break;
+            case FontStyle::VERTICAL_ALIGN_CENTRAL:
+                $element->addAttribute("alignment-baseline", "central");
+                break;
+            case FontStyle::VERTICAL_ALIGN_BASE:
+                $element->addAttribute("alignment-baseline", "alphabetic");
+                break;
+            case FontStyle::VERTICAL_ALIGN_BOTTOM:
+                $element->addAttribute("alignment-baseline", "text-after-edge");
+                break;
         }
     }
     
