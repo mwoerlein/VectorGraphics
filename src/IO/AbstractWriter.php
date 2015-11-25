@@ -226,9 +226,8 @@ class AbstractWriter
         
         for($i=-4; $i<25; $i++) {
             $arc = new RingArc(0, 0, 6 * $i + 50, 240, 15 * $i, 15);
-            $arc->setFillColor("rgb(236, 88, 85)");
+            $arc->setFillColor("rgb(236, 88, 85)", ($i+8)/32.);
             $arc->setStrokeColor("white");
-            $arc->setOpacity(($i+8)/32.);
             $graphic->add($arc);
     
             list ($x, $y) = $arc->getPoint(RingArc::ALPHA_CENTRAL, RingArc::RADIUS_MIDDLE);

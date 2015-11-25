@@ -1,8 +1,6 @@
 <?php
 namespace VectorGraphics\Model\Style;
 
-use VectorGraphics\Model\Style\StyleInterface;
-
 abstract class AbstractColoredStyle implements StyleInterface
 {
     /** @var HtmlColor */

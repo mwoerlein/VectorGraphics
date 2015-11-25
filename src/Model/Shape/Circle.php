@@ -60,7 +60,7 @@ class Circle extends Shape
         $x = $this->getX();
         $y = $this->getY();
         $r = $this->getRadius();
-        $s = $r*4.*(sqrt(2.)-1.)/3.;
+        $s = $r * 4. * (sqrt(2.) - 1.) / 3.;
         return (new Path())
             ->moveTo($x, $y+$r)
             ->curveTo($x+$s, $y+$r, $x+$r, $y+$s, $x+$r, $y)

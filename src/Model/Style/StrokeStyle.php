@@ -4,14 +4,14 @@ namespace VectorGraphics\Model\Style;
 class StrokeStyle extends AbstractColoredStyle
 {
     /** @var float */
-    private $width = 0;
+    private $width;
     
     /**
-     * @param int $width
-     * @param string|null $color
+     * @param float $width
+     * @param HtmlColor|string|null $color
      * @param float $opacity
      */
-    public function __construct($width = 1, $color = null, $opacity = 0.) {
+    public function __construct($width = 1., $color = null, $opacity = 1.) {
         $this->setColor($color, $opacity);
         $this->setWidth($width);
     }

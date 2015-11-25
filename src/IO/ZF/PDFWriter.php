@@ -36,7 +36,6 @@ class PDFWriter extends AbstractWriter
     /** Fill and stroke the text. */
     const TEXT_DRAW_FILL_AND_STROKE = 2;
     
-    
     /** @var PDFWriter */
     private static $instance;
     
@@ -46,7 +45,7 @@ class PDFWriter extends AbstractWriter
     public static function instance()
     {
         if (null === self::$instance) {
-            self::$instance = new PDFWriter();
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -88,6 +87,9 @@ class PDFWriter extends AbstractWriter
         $page->saveGS();
         $this->translateAndClipToViewport($page, $graphic->getViewport(), $x, $y, $width, $height, $keepRatio);
         foreach ($graphic->getElements() as $element) {
+            if (!$element->isVisible()) {
+                continue;
+            }
             if ($element instanceof Text) {
                 $this->drawText($page, $element);
             } elseif ($element instanceof PathText) {
@@ -157,31 +159,75 @@ class PDFWriter extends AbstractWriter
     {
         $fillStyle = $shape->getFillStyle();
         $strokeStyle = $shape->getStrokeStyle();
-        if ($shape->getOpacity() === 0 || (!$fillStyle->isVisible() && !$strokeStyle->isVisible())) {
-            // not visible => do nothing
-            return;
-        }
-        
         $path = $shape->getPath();
+    
+        $page->saveGS();
         if (!$fillStyle->isVisible()) {
             $this->setLineStyle($page, $strokeStyle, $shape->getOpacity());
-            $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
         } elseif (!$strokeStyle->isVisible()) {
             $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
-            $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
         } elseif ($fillStyle->getOpacity() !== 1 || $strokeStyle->getOpacity() !== 1) {
             // separate fill and stroke to emulate correct alpha behavior
             $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
-            $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
             
             $this->setLineStyle($page, $strokeStyle, $shape->getOpacity());
-            $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
         } else {
             $this->setLineStyle($page, $strokeStyle);
             $this->setFillStyle($page, $fillStyle);
             $page->setAlpha($shape->getOpacity());
-            $this->drawPath($page, $path, ZendPage::SHAPE_DRAW_FILL_AND_STROKE);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL_AND_STROKE);
         }
+        $page->restoreGS();
+    }
+    
+    /**
+     * @param ZendPage $page
+     * @param Text $element
+     *
+     * @throws \Exception
+     */
+    private function drawText(ZendPage $page, Text $element)
+    {
+        $fillStyle = $element->getFillStyle();
+        $strokeStyle = $element->getStrokeStyle();
+        $fontStyle = $element->getFontStyle();
+        
+        $page->saveGS();
+        if ($element->getRotation() > 0) {
+            $page->rotate($element->getX(), $element->getY(), -$element->getRotation() / 180. * pi());
+        }
+        
+        /** @var float $x */
+        /** @var float $y */
+        /** @var ZendAbstractFont $font */
+        list($x, $y, $font) = $this->computeTextAnchor($element);
+        $page->setFont($font, $fontStyle->getSize());
+        $encodedText = $font->encodeString($element->getText(), 'UTF-8');
+        
+        if (!$fillStyle->isVisible()) {
+            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
+            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
+        } elseif (!$strokeStyle->isVisible()) {
+            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
+            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
+        } elseif ($fillStyle->getOpacity() !== 1 || $strokeStyle->getOpacity() !== 1) {
+            // separate fill and stroke to emulate correct alpha behavior
+            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
+            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
+            
+            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
+            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
+        } else {
+            $this->setLineStyle($page, $strokeStyle);
+            $this->setFillStyle($page, $fillStyle);
+            $page->setAlpha($element->getOpacity());
+            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL_AND_STROKE);
+        }
+        $page->restoreGS();
     }
     
     /**
@@ -192,8 +238,7 @@ class PDFWriter extends AbstractWriter
      * @return ZendPage
      * @throws \Exception
      */
-    // private function drawPath(ZendPage $page, Path $path, $fillType) // TODO: currently used directly in PHPPdf
-    public function drawPath(ZendPage $page, Path $path, $fillType)
+    private function drawRawPath(ZendPage $page, Path $path, $fillType)
     {
         $content = '';
         foreach ($path->getElements() as $element) {
@@ -237,59 +282,6 @@ class PDFWriter extends AbstractWriter
         }
         
         return $page->rawWrite($content, 'PDF');
-    }
-    
-    /**
-     * @param ZendPage $page
-     * @param Text $element
-     *
-     * @throws \Exception
-     */
-    private function drawText(ZendPage $page, Text $element)
-    {
-        $fillStyle = $element->getFillStyle();
-        $strokeStyle = $element->getStrokeStyle();
-        $fontStyle = $element->getFontStyle();
-        if (
-            $element->getOpacity() === 0
-            || !$fontStyle->isVisible()
-            || (!$fillStyle->isVisible() && !$strokeStyle->isVisible())) {
-            // not visible => do nothing
-            return;
-        }
-        
-        $page->saveGS();
-        if ($element->getRotation() > 0) {
-            $page->rotate($element->getX(), $element->getY(), -$element->getRotation() / 180. * pi());
-        }
-        
-        /** @var float $x */
-        /** @var float $y */
-        /** @var ZendAbstractFont $font */
-        list($x, $y, $font) = $this->computeTextAnchor($element);
-        $page->setFont($font, $fontStyle->getSize());
-        $encodedText = $font->encodeString($element->getText(), 'UTF-8');
-        
-        if (!$fillStyle->isVisible()) {
-            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
-        } elseif (!$strokeStyle->isVisible()) {
-            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
-        } elseif ($fillStyle->getOpacity() !== 1 || $strokeStyle->getOpacity() !== 1) {
-            // separate fill and stroke to emulate correct alpha behavior
-            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
-            
-            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
-        } else {
-            $this->setLineStyle($page, $strokeStyle);
-            $this->setFillStyle($page, $fillStyle);
-            $page->setAlpha($element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL_AND_STROKE);
-        }
-        $page->restoreGS();
     }
     
     /**

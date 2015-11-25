@@ -26,6 +26,14 @@ abstract class GraphicElement
     }
     
     /**
+     * @return bool
+     */
+    public function isVisible()
+    {
+        return $this->getOpacity() > 0.;
+    }
+    
+    /**
      * @param float $angle
      *
      * @return float
