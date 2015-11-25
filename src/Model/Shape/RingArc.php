@@ -187,17 +187,24 @@ class RingArc extends Shape
      */
     private function getPartialRingPath()
     {
-        $path = new Path();
-        if ($this->angle === 0.) {
-            return $path;
-        }
-        $radians = ArcUtils::getArcRadians($this->getAlpha(), $this->getAngle());
-        $scale = ArcUtils::getScale($radians);
-        $pos = 0;
         $outer = $this->getOuterRadius();
         $inner = $this->getInnerRadius();
         $cx = $this->getX();
         $cy = $this->getY();
+        $path = new Path();
+        if ($this->angle === 0.) {
+            $radian = ArcUtils::toRadian($this->getAlpha());
+            list($outerX, $outerY) = ArcUtils::getPolarPoint($outer, $radian);
+            list($innerX, $innerY) = ArcUtils::getPolarPoint($inner, $radian);
+            return $path
+                ->moveTo($outerX + $cx, $outerY + $cy)
+                ->lineTo($innerX + $cx, $innerY + $cy)
+                ->close();
+        }
+        
+        $radians = ArcUtils::getArcRadians($this->getAlpha(), $this->getAngle());
+        $scale = ArcUtils::getScale($radians);
+        $pos = 0;
         
         // outer arc
         list($curX, $curY) = ArcUtils::getPolarPoint($outer, $radians[$pos++]);

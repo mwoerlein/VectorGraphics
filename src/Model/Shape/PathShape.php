@@ -25,4 +25,12 @@ class PathShape extends Shape
     {
         return $this->path;
     }
+    
+    /**
+     * @return bool
+     */
+    public function isVisible()
+    {
+        return parent::isVisible() && $this->getPath()->isVisible();
+    }
 }

@@ -14,6 +14,9 @@ class Path {
     /** @var MoveTo|null */
     private $lastMoveTo = null;
     
+    /** @var bool */
+    private $visible = false;
+    
     /**
      * @param float $x
      * @param float $y
@@ -33,6 +36,7 @@ class Path {
      */
     public function lineTo($x, $y)
     {
+        $this->visible = true;
         return $this->add(new LineTo($x, $y));
     }
     
@@ -48,6 +52,7 @@ class Path {
      */
     public function curveTo($cx1, $cy1, $cx2, $cy2, $x, $y)
     {
+        $this->visible = true;
         return $this->add(new CurveTo($cx1, $cy1, $cx2, $cy2, $x, $y));
     }
     
@@ -72,6 +77,14 @@ class Path {
     public function getElements()
     {
         return $this->elements;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isVisible()
+    {
+        return $this->visible;
     }
     
     /**
