@@ -10,4 +10,12 @@ class FillStyle extends AbstractColoredStyle
     public function __construct($color = null, $opacity = 1.) {
         $this->setColor($color, $opacity);
     }
+    
+    /**
+     * @param FillStyle $style
+     */
+    public function update(FillStyle $style)
+    {
+        $this->setColor($style->getColor(), $style->getOpacity());
+    }
 }

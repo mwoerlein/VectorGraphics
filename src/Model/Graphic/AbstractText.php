@@ -18,7 +18,7 @@ class AbstractText extends GraphicElement
     public function __construct($text)
     {
         $this->text = str_replace(["\r\n", "\r", "\n"], '', $text); // ignore newlines
-        $this->initFontStyle(); // 12 Points Times, left aligned
+        $this->initFontStyle(); // 12 point Times, left aligned
         $this->initFillStyle("black"); // black fill
         $this->initStrokeStyle(); // no stroke
     }

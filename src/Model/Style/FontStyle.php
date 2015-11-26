@@ -1,8 +1,6 @@
 <?php
 namespace VectorGraphics\Model\Style;
 
-use VectorGraphics\Model\Style\StyleInterface;
-
 class FontStyle implements StyleInterface
 {
     const FONT_COURIER = "Courier";
@@ -64,10 +62,13 @@ class FontStyle implements StyleInterface
     
     /**
      * @param string $name
+     *
+     * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
     
     /**
@@ -80,10 +81,13 @@ class FontStyle implements StyleInterface
     
     /**
      * @param string $style
+     *
+     * @return $this
      */
     public function setStyle($style)
     {
         $this->style = $style;
+        return $this;
     }
     
     /**
@@ -96,10 +100,13 @@ class FontStyle implements StyleInterface
     
     /**
      * @param int $size
+     *
+     * @return $this
      */
     public function setSize($size)
     {
         $this->size = $size;
+        return $this;
     }
     
     /**
@@ -121,11 +128,14 @@ class FontStyle implements StyleInterface
     /**
      * @param string $hAlign
      * @param string $vAlign
+     *
+     * @return $this
      */
     public function align($hAlign = self::HORIZONTAL_ALIGN_LEFT, $vAlign = self::VERTICAL_ALIGN_BASE)
     {
         $this->hAlign = $hAlign;
         $this->vAlign = $vAlign;
+        return $this;
     }
     
     /**
@@ -134,5 +144,16 @@ class FontStyle implements StyleInterface
     public function isVisible()
     {
         return $this->getSize() > 0;
+    }
+    
+    /**
+     * @param FontStyle $style
+     */
+    public function update(FontStyle $style)
+    {
+        $this->setName($style->getName());
+        $this->setStyle($style->getStyle());
+        $this->setSize($style->getSize());
+        $this->align($style->getHAlign(), $style->getVAlign());
     }
 }

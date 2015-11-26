@@ -1,38 +1,18 @@
 <?php
 namespace VectorGraphics\Model;
 
-use VectorGraphics\Model\Graphic\GraphicElement;
+use VectorGraphics\Model\Graphic\AbstractElementContainer;
 use VectorGraphics\Model\Graphic\Viewport;
 
-class Graphic
+class Graphic extends AbstractElementContainer
 {
-    /** @var GraphicElement[] */
-    private $elements = [];
-    
     /** @var Viewport */
     private $viewport;
     
     public function __construct()
     {
+        parent::__construct();
         $this->setViewportCorners(0., 0., 1000., 1000.);
-    }
-    
-    /**
-     * @param GraphicElement $element
-     *
-     * @return $this
-     */
-    public function add(GraphicElement $element) {
-        $this->elements[] = $element;
-        return $this;
-    }
-    
-    /**
-     * @return GraphicElement[]
-     */
-    public function getElements()
-    {
-        return $this->elements;
     }
     
     /**

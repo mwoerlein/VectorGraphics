@@ -26,10 +26,13 @@ class StrokeStyle extends AbstractColoredStyle
     
     /**
      * @param float $width
+     *
+     * @return $this
      */
     public function setWidth($width)
     {
         $this->width = $width;
+        return $this;
     }
     
     /**
@@ -38,5 +41,14 @@ class StrokeStyle extends AbstractColoredStyle
     public function isVisible()
     {
         return $this->getWidth() > 0. && parent::isVisible();
+    }
+    
+    /**
+     * @param StrokeStyle $style
+     */
+    public function update(StrokeStyle $style)
+    {
+        $this->setColor($style->getColor(), $style->getOpacity());
+        $this->setWidth($style->getWidth());
     }
 }
