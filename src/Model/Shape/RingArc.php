@@ -124,9 +124,9 @@ class RingArc extends AbstractShape
     {
         list ($x, $y) = ArcUtils::getPolarPoint(
             $this->getRelRadius($relRadius),
-            ArcUtils::toRadian($this->getRelAngle($relAngle)) 
+            ArcUtils::toRadian($this->normalizeDegree($this->getRelAngle($relAngle))) 
         );
-        return [$x + $this->getX(), $y + $this->getX()];
+        return [$x + $this->getX(), $y + $this->getY()];
     }
     
     private function getRelRadius($pos) {
@@ -135,10 +135,9 @@ class RingArc extends AbstractShape
                 return $this->innerRadius;
             case self::RADIUS_OUTER:
                 return $this->outerRadius;
-            case self::RADIUS_MIDDLE:
-            default:
-                return ($this->innerRadius + $this->outerRadius) / 2.;
         }
+        // default: RADIUS_MIDDLE
+        return ($this->innerRadius + $this->outerRadius) / 2.;
     }
     
     private function getRelAngle($pos) {
@@ -147,10 +146,9 @@ class RingArc extends AbstractShape
                 return $this->alpha;
             case self::ALPHA_END:
                 return $this->alpha + $this->angle;
-            case self::ALPHA_CENTRAL:
-            default:
-                return $this->alpha + $this->angle/2.;
         }
+        // default: ALPHA_CENTRAL
+        return $this->alpha + $this->angle/2.;
     }
     
     /**

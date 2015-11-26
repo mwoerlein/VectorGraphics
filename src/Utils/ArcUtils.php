@@ -52,6 +52,9 @@ class ArcUtils
         while($stepCount-- > 0) {
             $radians[] = $radian;
             $radian += $step;
+            if ($radian > 2 * pi()) {
+                $radian -= 2 * pi();
+            }
         }
         $radians[] = $end;
         return $radians;
