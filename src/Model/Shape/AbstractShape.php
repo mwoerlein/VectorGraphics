@@ -14,8 +14,8 @@ abstract class AbstractShape extends GraphicElement
      */
     public function __construct()
     {
-        $this->initFillStyle(); // no fill
-        $this->initStrokeStyle(1, "black"); // black stroke
+        $this->initFillStyle(null); // no fill
+        $this->initStrokeStyle(1, 'black'); // black stroke
     }
     
     /**

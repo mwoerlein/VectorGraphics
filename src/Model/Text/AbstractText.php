@@ -20,8 +20,8 @@ class AbstractText extends GraphicElement
     {
         $this->text = str_replace(["\r\n", "\r", "\n"], '', $text); // ignore newlines
         $this->initFontStyle(); // 12 point Times, left aligned
-        $this->initFillStyle("black"); // black fill
-        $this->initStrokeStyle(); // no stroke
+        $this->initFillStyle('black'); // black fill
+        $this->initStrokeStyle(1., null); // no stroke
     }
     
     /**

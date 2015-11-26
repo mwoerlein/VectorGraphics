@@ -36,10 +36,10 @@ abstract class AbstractElementContainer
     
     public function __construct()
     {
-        $this->defaultShapeFillStyle = new FillStyle(); // no fill
-        $this->defaultShapeStrokeStyle = new StrokeStyle(1, "black"); // black stroke
-        $this->defaultTextFillStyle = new FillStyle("black"); // black fill
-        $this->defaultTextStrokeStyle = new StrokeStyle(); // no stroke
+        $this->defaultShapeFillStyle = new FillStyle(null); // no fill
+        $this->defaultShapeStrokeStyle = new StrokeStyle(1., 'black'); // black stroke
+        $this->defaultTextFillStyle = new FillStyle('black'); // black fill
+        $this->defaultTextStrokeStyle = new StrokeStyle(1., null); // no stroke
         $this->defaultTextFontStyle = new FontStyle(); // 12 point Times, left aligned
     }
     
