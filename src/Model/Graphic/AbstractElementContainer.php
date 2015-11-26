@@ -2,7 +2,7 @@
 namespace VectorGraphics\Model\Graphic;
 
 use VectorGraphics\Model\Path;
-use VectorGraphics\Model\Shape;
+use VectorGraphics\Model\Shape\AbstractShape;
 use VectorGraphics\Model\Shape\Circle;
 use VectorGraphics\Model\Shape\PathShape;
 use VectorGraphics\Model\Shape\Rectangle;
@@ -10,6 +10,9 @@ use VectorGraphics\Model\Shape\RingArc;
 use VectorGraphics\Model\Style\FillStyle;
 use VectorGraphics\Model\Style\FontStyle;
 use VectorGraphics\Model\Style\StrokeStyle;
+use VectorGraphics\Model\Text\AbstractText;
+use VectorGraphics\Model\Text\PathText;
+use VectorGraphics\Model\Text\Text;
 
 abstract class AbstractElementContainer
 {
@@ -169,11 +172,11 @@ abstract class AbstractElementContainer
     }
     
     /**
-     * @param Shape $shape
+     * @param AbstractShape $shape
      *
-     * @return Shape
+     * @return AbstractShape
      */
-    private function addAndInitShape(Shape $shape) {
+    private function addAndInitShape(AbstractShape $shape) {
         $shape->getFillStyle()->update($this->defaultShapeFillStyle);
         $shape->getStrokeStyle()->update($this->defaultShapeStrokeStyle);
         $this->add($shape);

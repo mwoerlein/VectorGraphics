@@ -2,9 +2,8 @@
 namespace VectorGraphics\Model\Shape;
 
 use VectorGraphics\Model\Path;
-use VectorGraphics\Model\Shape;
 
-class Rectangle extends Shape
+class Rectangle extends AbstractShape
 {
     /** @var float */
     private $x;

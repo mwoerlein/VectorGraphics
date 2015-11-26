@@ -2,9 +2,8 @@
 namespace VectorGraphics\Model\Shape;
 
 use VectorGraphics\Model\Path;
-use VectorGraphics\Model\Shape;
 
-class Circle extends Shape
+class Circle extends AbstractShape
 {
     /** @var float */
     private $x;

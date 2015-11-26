@@ -5,21 +5,21 @@ use SimpleXMLElement;
 use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Graphic;
 use VectorGraphics\Model\Graphic\GraphicElement;
-use VectorGraphics\Model\Graphic\AbstractText;
-use VectorGraphics\Model\Graphic\Text;
-use VectorGraphics\Model\Graphic\PathText;
 use VectorGraphics\Model\Graphic\Viewport;
 use VectorGraphics\Model\Path;
 use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\LineTo;
 use VectorGraphics\Model\Path\MoveTo;
-use VectorGraphics\Model\Shape;
+use VectorGraphics\Model\Shape\AbstractShape;
 use VectorGraphics\Model\Shape\Circle;
 use VectorGraphics\Model\Shape\Rectangle;
 use VectorGraphics\Model\Style\FillStyle;
 use VectorGraphics\Model\Style\FontStyle;
 use VectorGraphics\Model\Style\StrokeStyle;
+use VectorGraphics\Model\Text\AbstractText;
+use VectorGraphics\Model\Text\PathText;
+use VectorGraphics\Model\Text\Text;
 
 class SVGWriter extends AbstractWriter
 {
@@ -60,7 +60,7 @@ class SVGWriter extends AbstractWriter
                 $this->addRect($svg, $element, $yBase);
             } elseif ($element instanceof Circle) {
                 $this->addCircle($svg, $element, $yBase);
-            } elseif ($element instanceof Shape) {
+            } elseif ($element instanceof AbstractShape) {
                 $this->addShape($svg, $element, $yBase);
             } else {
                 // TODO: cleanup exceptions
@@ -72,13 +72,13 @@ class SVGWriter extends AbstractWriter
     
     /**
      * @param SimpleXMLElement $svg
-     * @param Shape $shape
+     * @param AbstractShape $shape
      * @param float $yBase
      *
      * @return SimpleXMLElement
      * @throws \Exception
      */
-    private function addShape(SimpleXMLElement $svg, Shape $shape, $yBase)
+    private function addShape(SimpleXMLElement $svg, AbstractShape $shape, $yBase)
     {
         $path = $this->addPath($svg, $shape->getPath(), $yBase);
         $this->addShapeStyle($path, $shape);
@@ -164,7 +164,7 @@ class SVGWriter extends AbstractWriter
     
     /**
      * @param SimpleXMLElement $svg
-     * @param Shape\Circle $circle
+     * @param Circle $circle
      * @param float $yBase
      *
      * @return SimpleXMLElement
@@ -214,9 +214,9 @@ class SVGWriter extends AbstractWriter
     
     /**
      * @param SimpleXMLElement $element
-     * @param Shape $shape
+     * @param AbstractShape $shape
      */
-    private function addShapeStyle(SimpleXMLElement $element, Shape $shape)
+    private function addShapeStyle(SimpleXMLElement $element, AbstractShape $shape)
     {
         $this->addFillStyle($element, $shape->getFillStyle());
         $this->addStrokeStyle($element, $shape->getStrokeStyle());

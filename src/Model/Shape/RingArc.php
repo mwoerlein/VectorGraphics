@@ -2,10 +2,9 @@
 namespace VectorGraphics\Model\Shape;
 
 use VectorGraphics\Model\Path;
-use VectorGraphics\Model\Shape;
 use VectorGraphics\Utils\ArcUtils;
 
-class RingArc extends Shape
+class RingArc extends AbstractShape
 {
     const ALPHA_START = 'start';
     const ALPHA_CENTRAL = 'central';

@@ -2,9 +2,8 @@
 namespace VectorGraphics\Model\Shape;
 
 use VectorGraphics\Model\Path;
-use VectorGraphics\Model\Shape;
 
-class PathShape extends Shape
+class PathShape extends AbstractShape
 {
     /** @var Path */
     private $path;

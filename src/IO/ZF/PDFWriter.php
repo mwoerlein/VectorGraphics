@@ -3,19 +3,19 @@ namespace VectorGraphics\IO\ZF;
 
 use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Graphic;
-use VectorGraphics\Model\Graphic\Text;
-use VectorGraphics\Model\Graphic\PathText;
 use VectorGraphics\Model\Graphic\Viewport;
 use VectorGraphics\Model\Path;
 use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\LineTo;
 use VectorGraphics\Model\Path\MoveTo;
-use VectorGraphics\Model\Shape;
+use VectorGraphics\Model\Shape\AbstractShape;
 use VectorGraphics\Model\Style\FillStyle;
 use VectorGraphics\Model\Style\FontStyle;
 use VectorGraphics\Model\Style\HtmlColor;
 use VectorGraphics\Model\Style\StrokeStyle;
+use VectorGraphics\Model\Text\PathText;
+use VectorGraphics\Model\Text\Text;
 use VectorGraphics\Utils\TextUtils;
 use ZendPdf\Color\ColorInterface as ZendColor;
 use ZendPdf\Color\Html as ZendHtmlColor;
@@ -94,7 +94,7 @@ class PDFWriter extends AbstractWriter
                 $this->drawText($page, $element);
             } elseif ($element instanceof PathText) {
                 // TODO: VG-11: implement text on path
-            } elseif ($element instanceof Shape) {
+            } elseif ($element instanceof AbstractShape) {
                 $this->drawShape($page, $element);
             } else {
                 // TODO: cleanup exceptions
@@ -151,11 +151,11 @@ class PDFWriter extends AbstractWriter
     
     /**
      * @param ZendPage $page
-     * @param Shape $shape
+     * @param AbstractShape $shape
      *
      * @throws \Exception
      */
-    private function drawShape(ZendPage $page, Shape $shape)
+    private function drawShape(ZendPage $page, AbstractShape $shape)
     {
         $fillStyle = $shape->getFillStyle();
         $strokeStyle = $shape->getStrokeStyle();

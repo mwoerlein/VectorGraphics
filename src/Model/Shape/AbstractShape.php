@@ -1,11 +1,12 @@
 <?php
-namespace VectorGraphics\Model;
+namespace VectorGraphics\Model\Shape;
 
 use VectorGraphics\Model\Graphic\GraphicElement;
+use VectorGraphics\Model\Path;
 use VectorGraphics\Model\Style\FillStyledTrait;
 use VectorGraphics\Model\Style\StrokeStyledTrait;
 
-abstract class Shape extends GraphicElement
+abstract class AbstractShape extends GraphicElement
 {
     use StrokeStyledTrait, FillStyledTrait;
     

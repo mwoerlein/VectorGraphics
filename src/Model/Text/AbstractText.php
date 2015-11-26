@@ -1,6 +1,7 @@
 <?php
-namespace VectorGraphics\Model\Graphic;
+namespace VectorGraphics\Model\Text;
 
+use VectorGraphics\Model\Graphic\GraphicElement;
 use VectorGraphics\Model\Style\FillStyledTrait;
 use VectorGraphics\Model\Style\FontStyledTrait;
 use VectorGraphics\Model\Style\StrokeStyledTrait;

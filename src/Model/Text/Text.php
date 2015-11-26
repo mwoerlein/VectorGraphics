@@ -1,5 +1,5 @@
 <?php
-namespace VectorGraphics\Model\Graphic;
+namespace VectorGraphics\Model\Text;
 
 class Text extends AbstractText
 {
