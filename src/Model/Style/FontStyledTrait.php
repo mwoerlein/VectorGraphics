@@ -13,7 +13,7 @@ trait FontStyledTrait
      * @param string $hAlign
      * @param string $vAlign
      */
-    public function initFontStyle(
+    protected function initFontStyle(
         $size = 12,
         $name = FontStyle::FONT_TIMES,
         $style = FontStyle::FONT_STYLE_NORMAL,

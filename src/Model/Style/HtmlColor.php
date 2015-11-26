@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: hassan
- * Date: 24.11.15
- * Time: 10:48
- */
-
 namespace VectorGraphics\Model\Style;
-
 
 class HtmlColor
 {
@@ -73,16 +65,21 @@ class HtmlColor
     }
     
     /** @var string */
-    private $color = 'black';
+    private $color;
     
+    /**
+     * @param string $color
+     */
     private function __construct($color)
     {
         $this->color = $color;
     }
     
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->color;
     }
-    
 }
