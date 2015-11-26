@@ -31,16 +31,10 @@ The following example generates a svg-image containing a pentagram in a red circ
  
     $graphic = new Graphic();
     $graphic->setViewportCorners(-50, -50, 50, 50);
-
-    $circ = new Circle(0, 0, 45);
-    $circ->setStrokeColor("black");
-    $circ->setFillColor("red");
-    $circ->setFillOpacity(0.5);
-    $graphic->add($circ);
-
-    $rect = new Rectangle(-50, -50, 100, 100);
-    $graphic->add($rect);
-
+    
+    $graphic->addRectangle(-49, -49, 98, 98)->setStrokeWidth(2);
+    $graphic->addCircle(0, 0, 45)->setFillColor('red', 0.5);
+    
     $radius = 40;
     $path = new Path();
     $path->moveTo($radius * sin(0./5. * pi()), $radius * cos(0./5. * pi()));
@@ -48,10 +42,8 @@ The following example generates a svg-image containing a pentagram in a red circ
     $path->lineTo($radius * sin(8./5. * pi()), $radius * cos(8./5. * pi()));
     $path->lineTo($radius * sin(2./5. * pi()), $radius * cos(2./5. * pi()));
     $path->lineTo($radius * sin(6./5. * pi()), $radius * cos(6./5. * pi()));
-    $path->lineTo($radius * sin(0./5. * pi()), $radius * cos(0./5. * pi()));
     $path->close();
-
-    $graphic->add(new PathShape($path));
+    $graphic->addPath($path);
     
     header('Content-Type: image/svg+xml');
     echo (new SVGWriter())->toSVG($graphic, 10, 10);
