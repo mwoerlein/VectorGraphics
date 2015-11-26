@@ -15,8 +15,8 @@ abstract class PathElement {
      */
     public function __construct($destX, $destY)
     {
-        $this->destX = $destX;
-        $this->destY = $destY;
+        $this->destX = (float) $destX;
+        $this->destY = (float) $destY;
     }
     
     /**

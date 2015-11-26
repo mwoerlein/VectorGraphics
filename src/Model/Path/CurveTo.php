@@ -26,10 +26,10 @@ class CurveTo extends PathElement {
     public function __construct($control1X, $control1Y, $control2X, $control2Y, $destX, $destY)
     {
         parent::__construct($destX, $destY);
-        $this->control1X = $control1X;
-        $this->control1Y = $control1Y;
-        $this->control2X = $control2X;
-        $this->control2Y = $control2Y;
+        $this->control1X = (float) $control1X;
+        $this->control1Y = (float) $control1Y;
+        $this->control2X = (float) $control2X;
+        $this->control2Y = (float) $control2Y;
     }
     
     /**

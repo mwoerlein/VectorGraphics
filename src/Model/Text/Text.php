@@ -20,8 +20,8 @@ class Text extends AbstractText
     public function __construct($text, $x, $y)
     {
         parent::__construct($text);
-        $this->x = $x;
-        $this->y = $y;
+        $this->x = (float) $x;
+        $this->y = (float) $y;
     }
     
     /**
@@ -53,6 +53,6 @@ class Text extends AbstractText
      */
     public function setRotation($rotation)
     {
-        $this->rotation = $this->normalizeDegree($rotation);
+        $this->rotation = $this->normalizeDegree((float) $rotation);
     }
 }

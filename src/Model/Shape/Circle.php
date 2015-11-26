@@ -22,9 +22,9 @@ class Circle extends AbstractShape
     public function __construct($x, $y, $radius)
     {
         parent::__construct();
-        $this->x = $x;
-        $this->y = $y;
-        $this->radius = $radius;
+        $this->x = (float) $x;
+        $this->y = (float) $y;
+        $this->radius = (float) $radius;
     }
     
     /**

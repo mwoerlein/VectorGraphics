@@ -7,7 +7,7 @@ abstract class AbstractColoredStyle implements StyleInterface
     private $color;
     
     /** @var float */
-    private $opacity = 1;
+    private $opacity = 0.;
     
     /**
      * @return HtmlColor|null
@@ -31,20 +31,20 @@ abstract class AbstractColoredStyle implements StyleInterface
             $this->opacity = 0.;
         } elseif ($color instanceof HtmlColor) {
             $this->color = $color;
-            $this->opacity = $opacity;
+            $this->opacity = (float) $opacity;
         } elseif (is_string($color)) {
             if (preg_match(HtmlColor::PATTERN_HEX, $color, $matches)) {
                 $this->color = HtmlColor::byHex($color);
-                $this->opacity = $opacity;
+                $this->opacity = (float) $opacity;
             } elseif (preg_match(HtmlColor::PATTERN_RGB, $color, $matches)) {
                 $this->color = HtmlColor::rgb((int) $matches[1], (int) $matches[2], (int) $matches[3]);
-                $this->opacity = $opacity;
+                $this->opacity = (float) $opacity;
             } elseif (preg_match(HtmlColor::PATTERN_RGBA, $color, $matches)) {
                 $this->color = HtmlColor::rgb((int) $matches[1], (int) $matches[2], (int) $matches[3]);
                 $this->opacity = (float) $matches[4];
             } else {
                 $this->color = HtmlColor::byName($color);
-                $this->opacity = $opacity;
+                $this->opacity = (float) $opacity;
             }
         } else {
             // TODO: cleanup exceptions
@@ -68,7 +68,7 @@ abstract class AbstractColoredStyle implements StyleInterface
      */
     public function setOpacity($opacity)
     {
-        $this->opacity = $opacity;
+        $this->opacity = (float) $opacity;
         return $this;
     }
     
@@ -77,6 +77,6 @@ abstract class AbstractColoredStyle implements StyleInterface
      */
     public function isVisible()
     {
-        return $this->getOpacity() > 0;
+        return $this->getOpacity() > 0.;
     }
 }

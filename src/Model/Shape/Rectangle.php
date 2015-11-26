@@ -26,10 +26,10 @@ class Rectangle extends AbstractShape
     public function __construct($x, $y, $width, $height)
     {
         parent::__construct();
-        $this->x = $x;
-        $this->y = $y;
-        $this->width = $width;
-        $this->height = $height;
+        $this->x = (float) $x;
+        $this->y = (float) $y;
+        $this->width = (float) $width;
+        $this->height = (float) $height;
     }
     
     /**

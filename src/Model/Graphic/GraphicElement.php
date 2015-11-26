@@ -4,7 +4,7 @@ namespace VectorGraphics\Model\Graphic;
 abstract class GraphicElement
 {
     /** @var float */
-    private $opacity = 1;
+    private $opacity = 1.;
 
     /**
      * @return float
@@ -21,7 +21,7 @@ abstract class GraphicElement
      */
     public function setOpacity($opacity)
     {
-        $this->opacity = $opacity;
+        $this->opacity = (float) $opacity;
         return $this;
     }
     

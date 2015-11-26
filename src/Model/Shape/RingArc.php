@@ -43,16 +43,16 @@ class RingArc extends AbstractShape
     public function __construct($x, $y, $innerRadius, $outerRadius, $alpha = 0., $angle = 360.)
     {
         parent::__construct();
-        $this->x = $x;
-        $this->y = $y;
-        $this->innerRadius = $innerRadius;
-        $this->outerRadius = $outerRadius;
+        $this->x = (float) $x;
+        $this->y = (float) $y;
+        $this->innerRadius = (float) $innerRadius;
+        $this->outerRadius = (float) $outerRadius;
         if ($angle < 0.) {
             $alpha += $angle;
             $angle = - $angle;
         }
-        $this->alpha = $this->normalizeDegree($alpha);
-        $this->angle = $angle > 360. ? 360. : $angle;
+        $this->alpha = $this->normalizeDegree((float) $alpha);
+        $this->angle = $angle > 360. ? 360. : (float) $angle;
     }
 
     /**

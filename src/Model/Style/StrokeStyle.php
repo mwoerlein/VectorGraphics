@@ -11,7 +11,7 @@ class StrokeStyle extends AbstractColoredStyle
      * @param HtmlColor|string|null $color
      * @param float $opacity
      */
-    public function __construct($width = 1., $color = null, $opacity = 1.) {
+    public function __construct($width = 1., $color = 'black', $opacity = 1.) {
         $this->setColor($color, $opacity);
         $this->setWidth($width);
     }
@@ -31,7 +31,7 @@ class StrokeStyle extends AbstractColoredStyle
      */
     public function setWidth($width)
     {
-        $this->width = $width;
+        $this->width = (float) $width;
         return $this;
     }
     
