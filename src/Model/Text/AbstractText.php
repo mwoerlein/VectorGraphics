@@ -38,6 +38,7 @@ class AbstractText extends GraphicElement
     public function isVisible()
     {
         return parent::isVisible()
+            && '' !== $this->getText()
             && $this->getFontStyle()->isVisible()
             && ($this->getFillStyle()->isVisible() || $this->getStrokeStyle()->isVisible());
     }

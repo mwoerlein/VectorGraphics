@@ -1,5 +1,5 @@
 <?php
-namespace VectorGraphics\Test\Model;
+namespace VectorGraphics\Tests\Model;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use VectorGraphics\Model\Path;
