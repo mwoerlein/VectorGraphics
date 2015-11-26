@@ -49,7 +49,8 @@ class FontStyle implements StyleInterface
         $this->setSize($size);
         $this->setName($name);
         $this->setStyle($style);
-        $this->align($hAlign, $vAlign);
+        $this->setHAlign($hAlign);
+        $this->setVAlign($vAlign);
     }
     
     /**
@@ -105,7 +106,7 @@ class FontStyle implements StyleInterface
      */
     public function setSize($size)
     {
-        $this->size = $size;
+        $this->size = (int) $size;
         return $this;
     }
     
@@ -118,6 +119,17 @@ class FontStyle implements StyleInterface
     }
     
     /**
+     * @param string $hAlign
+     *
+     * @return $this
+     */
+    public function setHAlign($hAlign)
+    {
+        $this->hAlign = $hAlign;
+        return $this;
+    }
+    
+    /**
      * @return string
      */
     public function getVAlign()
@@ -126,14 +138,12 @@ class FontStyle implements StyleInterface
     }
     
     /**
-     * @param string $hAlign
      * @param string $vAlign
      *
      * @return $this
      */
-    public function align($hAlign = self::HORIZONTAL_ALIGN_LEFT, $vAlign = self::VERTICAL_ALIGN_BASE)
+    public function setVAlign($vAlign)
     {
-        $this->hAlign = $hAlign;
         $this->vAlign = $vAlign;
         return $this;
     }
@@ -154,6 +164,7 @@ class FontStyle implements StyleInterface
         $this->setName($style->getName());
         $this->setStyle($style->getStyle());
         $this->setSize($style->getSize());
-        $this->align($style->getHAlign(), $style->getVAlign());
+        $this->setHAlign($style->getHAlign());
+        $this->setVAlign($style->getVAlign());
     }
 }

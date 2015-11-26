@@ -50,22 +50,21 @@ class AbstractWriter
             ->setStrokeColor('yellow');
         
         $text = $graphic->addText('A', -40, 40);
+        $text->setFont(80);
         $text->align(FontStyle::HORIZONTAL_ALIGN_RIGHT, FontStyle::VERTICAL_ALIGN_BASE);
         $text->setStrokeColor('red');
         $text->setStrokeWidth(1);
         $text->setFillOpacity(0.4);
-        $text->setFontSize(80);
         
         $graphic->addCircle(40, 40, 40)
             ->setStrokeColor('yellow');
         
         $text = $graphic->addText('B', 40, 40);
-        $text->setFontName(FontStyle::FONT_COURIER);
+        $text->setFont(80, FontStyle::FONT_COURIER);
         $text->align(FontStyle::HORIZONTAL_ALIGN_LEFT, FontStyle::VERTICAL_ALIGN_BOTTOM);
         $text->setFillColor('blue');
         $text->setStrokeColor('red', 0.4);
         $text->setStrokeWidth(1);
-        $text->setFontSize(80);
         
         $graphic->addCircle(-40, -40, 40)
             ->setStrokeColor('yellow');
@@ -76,13 +75,12 @@ class AbstractWriter
             ->setStrokeColor('yellow');
         
         $text = $graphic->addText('DaDa', 40, -40);
-        $text->setFontName(FontStyle::FONT_HELVETICA);
         $text->setRotation(45);
+        $text->setFont(60, FontStyle::FONT_HELVETICA);
         $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_CENTRAL);
         $text->setStrokeColor('red');
         $text->setStrokeWidth(1);
         $text->setOpacity(0.4);
-        $text->setFontSize(60);
         
         $shape = $graphic->addPath((new Path())
             ->moveTo(0, 0)
@@ -185,11 +183,11 @@ class AbstractWriter
         
         // just supported in svg-writer, yet
         $text = $graphic->addPathText('Round and Round and Round and Round ...', $p1);
+        $text->setFont(12);
         $text->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_BOTTOM);
         $text->setStrokeColor('red');
         $text->setStrokeWidth(.2);
         $text->setOpacity(0.4);
-        $text->setFontSize(12);
         
         return $graphic;
     }
@@ -204,11 +202,10 @@ class AbstractWriter
         $graphic = new Graphic();
         $graphic->setViewportCorners(-300, -300, 300, 300);
         $graphic->getDefaultTextFontStyle()
-            ->setName(FontStyle::FONT_HELVETICA);
+            ->setName(FontStyle::FONT_HELVETICA)
+            ->setHAlign(FontStyle::HORIZONTAL_ALIGN_MIDDLE);
     
         // draw group labels
-        $graphic->getDefaultTextFontStyle()
-            ->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE);
         $graphic->getDefaultShapeStrokeStyle()
             ->setColor('gray');
         $graphic->addPath(self::getGroupPath(275, 280, 1, 118));
@@ -222,7 +219,7 @@ class AbstractWriter
 
         // draw inner arcs
         $graphic->getDefaultTextFontStyle()
-            ->align(FontStyle::HORIZONTAL_ALIGN_MIDDLE, FontStyle::VERTICAL_ALIGN_CENTRAL);
+            ->setVAlign(FontStyle::VERTICAL_ALIGN_CENTRAL);
         $graphic->getDefaultTextFillStyle()
             ->setColor('white');
         $graphic->getDefaultShapeFillStyle()

@@ -32,35 +32,20 @@ trait FontStyledTrait
     }
     
     /**
+     * @param int $fontSize
      * @param string $fontName
-     *
-     * @return $this
-     */
-    public function setFontName($fontName)
-    {
-        $this->fontStyle->setName($fontName);
-        return $this;
-    }
-    
-    /**
      * @param string $fontStyle
      *
      * @return $this
      */
-    public function setFontStyle($fontStyle)
-    {
-        $this->fontStyle->setStyle($fontStyle);
-        return $this;
-    }
-    
-    /**
-     * @param int $fontSize
-     *
-     * @return $this
-     */
-    public function setFontSize($fontSize)
-    {
+    public function setFont(
+        $fontSize = 12,
+        $fontName = FontStyle::FONT_TIMES,
+        $fontStyle = FontStyle::FONT_STYLE_NORMAL
+    ) {
         $this->fontStyle->setSize($fontSize);
+        $this->fontStyle->setName($fontName);
+        $this->fontStyle->setStyle($fontStyle);
         return $this;
     }
     
@@ -72,7 +57,8 @@ trait FontStyledTrait
      */
     public function align($hAlign = FontStyle::HORIZONTAL_ALIGN_LEFT, $vAlign = FontStyle::VERTICAL_ALIGN_BASE)
     {
-        $this->fontStyle->align($hAlign, $vAlign);
+        $this->fontStyle->setHAlign($hAlign);
+        $this->fontStyle->setVAlign($vAlign);
         return $this;
     }
 }
