@@ -52,4 +52,4 @@ The following example generates a svg-image containing a pentagram in a red circ
 
 ## Progress
 
-see in [ChangeLog](https://raw.githubusercontent.com/mwoerlein/vector-graphics/develop/CHANGELOG.md)
+see in [ChangeLog](https://github.com/mwoerlein/vector-graphics/blob/develop/CHANGELOG.md)
