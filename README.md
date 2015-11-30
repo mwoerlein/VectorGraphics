@@ -48,4 +48,8 @@ The following example generates a svg-image containing a pentagram in a red circ
     header('Content-Type: image/svg+xml');
     echo (new SVGWriter())->toSVG($graphic, 10, 10);
 
-[![SVG Sample](https://raw.githubusercontent.com/mwoerlein/vector-graphics/develop/docs/example1.png)](https://github.com/mwoerlein/vector-graphics/blob/develop/docs/example1.svg)
+[![SVG Sample](https://raw.githubusercontent.com/mwoerlein/vector-graphics/develop/docs/pentagram.png)](https://github.com/mwoerlein/vector-graphics/blob/develop/docs/pentagram.svg)
+
+## Progress
+
+see in [ChangeLog](https://raw.githubusercontent.com/mwoerlein/vector-graphics/develop/CHANGELOG.md)
