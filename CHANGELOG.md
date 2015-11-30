@@ -1,6 +1,6 @@
 # ChangeLog
 
-#### 0.1
+#### 0.1 (2015/11/30)
 
 - basic models for:
     - paths (moveTo, lineTo, curveTo, close)
