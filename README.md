@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mwoerlein/vector-graphics.svg?branch=develop)](https://travis-ci.org/mwoerlein/vector-graphics)
+[![Build Status](https://travis-ci.org/mwoerlein/vector-graphics.svg?branch=master)](https://travis-ci.org/mwoerlein/vector-graphics)
 
 # Vector Graphics Library
 PHP library for OO-modeling of vector graphics.
@@ -7,7 +7,7 @@ PHP library for OO-modeling of vector graphics.
 This library is designed to construct and describe general vector graphics independent of its application backend.
 These descriptions are intended to separate the definition on an graphic/chart/... and its representation.
 
-A graphic could be serialized into various document types using there capabilities for vecorized representations.
+A graphic could be serialized into various document types using there capabilities for vectorized representations.
 Currently supported/planed serializations are:
 
 - export as standalone SVG content
@@ -21,7 +21,7 @@ To add vector-graphics as a local, per-project dependency to your project, simpl
 ```JSON
 {
     "require": {
-        "mwoerlein/vector-graphics": "*@dev"
+        "mwoerlein/vector-graphics": ">0.1"
     }
 }
 ```
@@ -48,8 +48,8 @@ The following example generates a svg-image containing a pentagram in a red circ
     header('Content-Type: image/svg+xml');
     echo (new SVGWriter())->toSVG($graphic, 10, 10);
 
-[![SVG Sample](https://raw.githubusercontent.com/mwoerlein/vector-graphics/develop/docs/pentagram.png)](https://github.com/mwoerlein/vector-graphics/blob/develop/docs/pentagram.svg)
+[![SVG Sample](https://raw.githubusercontent.com/mwoerlein/vector-graphics/master/docs/pentagram.png)](https://github.com/mwoerlein/vector-graphics/blob/master/docs/pentagram.svg)
 
 ## Progress
 
-see in [ChangeLog](https://github.com/mwoerlein/vector-graphics/blob/develop/CHANGELOG.md)
+see in [ChangeLog](https://github.com/mwoerlein/vector-graphics/blob/master/CHANGELOG.md)
