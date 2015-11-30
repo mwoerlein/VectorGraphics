@@ -157,6 +157,17 @@ abstract class AbstractElementContainer
     }
     
     /**
+     * @param $x
+     * @param $y
+     * @param $width
+     *
+     * @return Rectangle
+     */
+    public function addSquare($x, $y, $width) {
+        return $this->addRectangle($x, $y, $width, $width);
+    }
+    
+    /**
      * @param float $x
      * @param float $y
      * @param float $innerRadius
