@@ -62,23 +62,25 @@ abstract class AbstractElementContainerTest extends TestCase
         ];
         $data['add circle'] = [
             'add' => [
-                "circle" => [1, 2, 3]
+                'circle' => [1, 2, 3],
             ],
             'elements' => [
                 new Circle(1, 2, 3),
             ],
         ];
-        $data['add rectangle'] = [
+        $data['add rectangles'] = [
             'add' => [
-                "rectangle" => [1, 2, 3, 4]
+                'square' => [1, 2, 3],
+                'rectangle' => [1, 2, 3, 4],
             ],
             'elements' => [
+                new Rectangle(1, 2, 3, 3),
                 new Rectangle(1, 2, 3, 4),
             ],
         ];
         $data['add ring arc'] = [
             'add' => [
-                "ringArc" => [1, 2, 3, 4, 5, 6]
+                'ringArc' => [1, 2, 3, 4, 5, 6],
             ],
             'elements' => [
                 new RingArc(1, 2, 3, 4, 5, 6),
@@ -87,7 +89,7 @@ abstract class AbstractElementContainerTest extends TestCase
         $path = new Path();
         $data['add path'] = [
             'add' => [
-                "path" => [$path]
+                'path' => [$path],
             ],
             'elements' => [
                 new PathShape($path),
