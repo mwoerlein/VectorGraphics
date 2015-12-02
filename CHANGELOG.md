@@ -1,5 +1,10 @@
 # ChangeLog
 
+#### 0.1.1 (2015-12-02)
+
+- enhance and fix unit-tests
+- add pdf-writer to samples
+
 #### 0.1 (2015-11-30)
 
 - basic models for:
