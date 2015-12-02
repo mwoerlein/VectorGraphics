@@ -168,7 +168,7 @@ class PDFWriter extends AbstractWriter
         } elseif (!$strokeStyle->isVisible()) {
             $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
             $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
-        } elseif ($fillStyle->getOpacity() !== 1 || $strokeStyle->getOpacity() !== 1) {
+        } elseif ($fillStyle->getOpacity() !== 1. || $strokeStyle->getOpacity() !== 1.) {
             // separate fill and stroke to emulate correct alpha behavior
             $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
             $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
@@ -214,7 +214,7 @@ class PDFWriter extends AbstractWriter
         } elseif (!$strokeStyle->isVisible()) {
             $this->setFillStyle($page, $fillStyle, $element->getOpacity());
             $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
-        } elseif ($fillStyle->getOpacity() !== 1 || $strokeStyle->getOpacity() !== 1) {
+        } elseif ($fillStyle->getOpacity() !== 1. || $strokeStyle->getOpacity() !== 1.) {
             // separate fill and stroke to emulate correct alpha behavior
             $this->setFillStyle($page, $fillStyle, $element->getOpacity());
             $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
