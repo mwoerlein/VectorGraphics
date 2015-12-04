@@ -2,6 +2,7 @@
 namespace VectorGraphics\IO\ZF;
 
 use VectorGraphics\IO\AbstractWriter;
+use VectorGraphics\Model\AnchorPath;
 use VectorGraphics\Model\Graphic;
 use VectorGraphics\Model\Graphic\Viewport;
 use VectorGraphics\Model\Path;
@@ -14,6 +15,7 @@ use VectorGraphics\Model\Style\FillStyle;
 use VectorGraphics\Model\Style\FontStyle;
 use VectorGraphics\Model\Style\HtmlColor;
 use VectorGraphics\Model\Style\StrokeStyle;
+use VectorGraphics\Model\Text\AbstractText;
 use VectorGraphics\Model\Text\PathText;
 use VectorGraphics\Model\Text\Text;
 use VectorGraphics\Utils\TextUtils;
@@ -93,7 +95,7 @@ class PDFWriter extends AbstractWriter
             if ($element instanceof Text) {
                 $this->drawText($page, $element);
             } elseif ($element instanceof PathText) {
-                // TODO: VG-11: implement text on path
+                $this->drawPathText($page, $element);
             } elseif ($element instanceof AbstractShape) {
                 $this->drawShape($page, $element);
             } else {
@@ -157,30 +159,8 @@ class PDFWriter extends AbstractWriter
      */
     private function drawShape(ZendPage $page, AbstractShape $shape)
     {
-        $fillStyle = $shape->getFillStyle();
-        $strokeStyle = $shape->getStrokeStyle();
-        $path = $shape->getPath();
-    
         $page->saveGS();
-        if (!$fillStyle->isVisible()) {
-            $this->setLineStyle($page, $strokeStyle, $shape->getOpacity());
-            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
-        } elseif (!$strokeStyle->isVisible()) {
-            $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
-            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
-        } elseif ($fillStyle->getOpacity() !== 1. || $strokeStyle->getOpacity() !== 1.) {
-            // separate fill and stroke to emulate correct alpha behavior
-            $this->setFillStyle($page, $fillStyle, $shape->getOpacity());
-            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
-            
-            $this->setLineStyle($page, $strokeStyle, $shape->getOpacity());
-            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
-        } else {
-            $this->setLineStyle($page, $strokeStyle);
-            $this->setFillStyle($page, $fillStyle);
-            $page->setAlpha($shape->getOpacity());
-            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL_AND_STROKE);
-        }
+        $this->drawFormattedPath($page, $shape->getPath(), $shape);
         $page->restoreGS();
     }
     
@@ -192,42 +172,205 @@ class PDFWriter extends AbstractWriter
      */
     private function drawText(ZendPage $page, Text $element)
     {
-        $fillStyle = $element->getFillStyle();
-        $strokeStyle = $element->getStrokeStyle();
         $fontStyle = $element->getFontStyle();
+        $font = $this->getZendFont($fontStyle);
         
         $page->saveGS();
         if ($element->getRotation() > 0) {
             $page->rotate($element->getX(), $element->getY(), -$element->getRotation() / 180. * pi());
         }
         
-        /** @var float $x */
-        /** @var float $y */
-        /** @var ZendAbstractFont $font */
-        list($x, $y, $font) = $this->computeTextAnchor($element);
+        list($x, $y) = $this->computeTextPos($element, $font);
         $page->setFont($font, $fontStyle->getSize());
-        $encodedText = $font->encodeString($element->getText(), 'UTF-8');
+        $this->drawFormattedText($page, $font->encodeString($element->getText(), 'UTF-8'), $x, $y, $element);
+        $page->restoreGS();
+    }
+    
+    /**
+     * @param Text $element
+     *
+     * @return mixed[] [float $x, float $y, ZendAbstractFont $font]
+     */
+    private function computeTextPos(Text $element, ZendAbstractFont $font)
+    {
+        $fontStyle = $element->getFontStyle();
+        $scale = $fontStyle->getSize() / (float) $font->getUnitsPerEm();
+        $x = $element->getX();
+        $y = $element->getY();
+        switch ($fontStyle->getHAlign()) {
+            case FontStyle::HORIZONTAL_ALIGN_MIDDLE:
+                $glyphNumbers = $font->glyphNumbersForCharacters(TextUtils::getCodes($element->getText()));
+                $x -= 0.5 * $scale * array_sum($font->widthsForGlyphs($glyphNumbers));
+                break;
+            case FontStyle::HORIZONTAL_ALIGN_RIGHT:
+                $glyphNumbers = $font->glyphNumbersForCharacters(TextUtils::getCodes($element->getText()));
+                $x -= $scale * array_sum($font->widthsForGlyphs($glyphNumbers));
+                break;
+        }
+        switch ($fontStyle->getVAlign()) {
+            case FontStyle::VERTICAL_ALIGN_TOP:
+                $y -= $scale * ($font->getAscent() - $font->getDescent());
+                break;
+            case FontStyle::VERTICAL_ALIGN_CENTRAL:
+                $y -= 0.5 * $scale * $font->getAscent();
+                break;
+            case FontStyle::VERTICAL_ALIGN_BOTTOM:
+                $y -= $scale * ($font->getDescent() + $font->getDescent());
+                break;
+        }
+        return [$x, $y];
+    }
+    
+    /**
+     * @param ZendPage $page
+     * @param PathText $element
+     *
+     * @throws \Exception
+     */
+    private function drawPathText(ZendPage $page, PathText $element)
+    {
+        $fontStyle = $element->getFontStyle();
+        $font = $this->getZendFont($fontStyle);
+        $anchorPath = new AnchorPath($element->getPath());
+    
+        list($chars, $pathPos, $yShift) = $this->preparePathText($element->getText(), $anchorPath, $font, $fontStyle);
+    
+        $page->saveGS();
+        $page->setFont($font, $fontStyle->getSize());
+        foreach ($chars as list($char, $width)) {
+            $anchor = $anchorPath->getAnchor($pathPos + $width / 2.);
+            $pathPos += $width;
+            
+            if (null === $anchor) {
+                // skip chars out of path
+                continue;
+            }
+            
+            $page->saveGS();
+            $page->translate($anchor->x, $anchor->y);
+            $page->rotate(0, 0, atan2($anchor->tangentY, $anchor->tangentX));
+            $this->drawFormattedText($page, $char, -$width / 2., -$yShift, $element);
+            $page->restoreGS();
+        }
+        $page->restoreGS();
+    }
+    
+    /**
+     * @param string $text
+     * @param AnchorPath $p
+     * @param FontStyle $fontStyle
+     *
+     * @return mixed[]
+     * @throws \Exception
+     */
+    private function preparePathText($text, AnchorPath $p, ZendAbstractFont $font, FontStyle $fontStyle)
+    {
+        $fontScale = $fontStyle->getSize() / (float)$font->getUnitsPerEm();
         
+        // split text into encoded characters and widths
+        $chars = [];
+        $widthSum = 0;
+        foreach (TextUtils::getCodes($text) as $code) {
+            $char = $font->encodeString(html_entity_decode('&#' . $code . ';', ENT_NOQUOTES, 'UTF-8'), 'UTF-8');
+            $width = $font->widthForGlyph($font->glyphNumberForCharacter($code));
+            $widthSum += $width;
+            $chars[] = [$char, $fontScale * $width];
+        }
+        
+        // compute start position
+        switch ($fontStyle->getHAlign()) {
+            case FontStyle::HORIZONTAL_ALIGN_MIDDLE:
+                $startPos = ($p->getLen() - $fontScale * $widthSum) / 2.;
+                break;
+            case FontStyle::HORIZONTAL_ALIGN_RIGHT:
+                $startPos = $p->getLen() - $fontScale * $widthSum;
+                break;
+            case FontStyle::HORIZONTAL_ALIGN_LEFT:
+            default:
+                $startPos = 0;
+        }
+        
+        // compute vertical shift
+        switch ($fontStyle->getVAlign()) {
+            case FontStyle::VERTICAL_ALIGN_TOP:
+                $yShift = $fontScale * ($font->getAscent() - $font->getDescent());
+                break;
+            case FontStyle::VERTICAL_ALIGN_CENTRAL:
+                $yShift = 0.5 * $fontScale * $font->getAscent();
+                break;
+            case FontStyle::VERTICAL_ALIGN_BOTTOM:
+                $yShift = $fontScale * $font->getDescent();
+                break;
+            case FontStyle::VERTICAL_ALIGN_BASE:
+            default:
+                $yShift = 0;
+        }
+        
+        return [$chars, $startPos, $yShift];
+    }
+    
+    /**
+     * @param ZendPage $page
+     * @param Path $path
+     * @param AbstractShape $format
+     */
+    private function drawFormattedPath(ZendPage $page, Path $path, AbstractShape $format)
+    {
+        $fillStyle = $format->getFillStyle();
+        $strokeStyle = $format->getStrokeStyle();
+        $opacity = $format->getOpacity();
         if (!$fillStyle->isVisible()) {
-            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
+            $this->setLineStyle($page, $strokeStyle, $opacity);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
         } elseif (!$strokeStyle->isVisible()) {
-            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
+            $this->setFillStyle($page, $fillStyle, $opacity);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
         } elseif ($fillStyle->getOpacity() !== 1. || $strokeStyle->getOpacity() !== 1.) {
             // separate fill and stroke to emulate correct alpha behavior
-            $this->setFillStyle($page, $fillStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL);
+            $this->setFillStyle($page, $fillStyle, $opacity);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL);
             
-            $this->setLineStyle($page, $strokeStyle, $element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_STROKE);
+            $this->setLineStyle($page, $strokeStyle, $opacity);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_STROKE);
         } else {
             $this->setLineStyle($page, $strokeStyle);
             $this->setFillStyle($page, $fillStyle);
-            $page->setAlpha($element->getOpacity());
-            $this->drawRawText($page, $encodedText, $x, $y, self::TEXT_DRAW_FILL_AND_STROKE);
+            $page->setAlpha($opacity);
+            $this->drawRawPath($page, $path, ZendPage::SHAPE_DRAW_FILL_AND_STROKE);
         }
-        $page->restoreGS();
+    }
+    
+    /**
+     * @param ZendPage $page
+     * @param string $text
+     * @param float $x
+     * @param float $y
+     * @param AbstractText $format
+     */
+    private function drawFormattedText(ZendPage $page, $text, $x, $y, AbstractText $format)
+    {
+        $fillStyle = $format->getFillStyle();
+        $strokeStyle = $format->getStrokeStyle();
+        $opacity = $format->getOpacity();
+        if (!$fillStyle->isVisible()) {
+            $this->setLineStyle($page, $strokeStyle, $opacity);
+            $this->drawRawText($page, $text, $x, $y, self::TEXT_DRAW_STROKE);
+        } elseif (!$strokeStyle->isVisible()) {
+            $this->setFillStyle($page, $fillStyle, $opacity);
+            $this->drawRawText($page, $text, $x, $y, self::TEXT_DRAW_FILL);
+        } elseif ($fillStyle->getOpacity() !== 1. || $strokeStyle->getOpacity() !== 1.) {
+            // separate fill and stroke to emulate correct alpha behavior
+            $this->setFillStyle($page, $fillStyle, $opacity);
+            $this->drawRawText($page, $text, $x, $y, self::TEXT_DRAW_FILL);
+            
+            $this->setLineStyle($page, $strokeStyle, $opacity);
+            $this->drawRawText($page, $text, $x, $y, self::TEXT_DRAW_STROKE);
+        } else {
+            $this->setLineStyle($page, $strokeStyle);
+            $this->setFillStyle($page, $fillStyle);
+            $page->setAlpha($opacity);
+            $this->drawRawText($page, $text, $x, $y, self::TEXT_DRAW_FILL_AND_STROKE);
+        }
     }
     
     /**
@@ -282,42 +425,6 @@ class PDFWriter extends AbstractWriter
         }
         
         return $page->rawWrite($content, 'PDF');
-    }
-    
-    /**
-     * @param Text $element
-     *
-     * @return mixed[] [float $x, float $y, ZendAbstractFont $font]
-     */
-    private function computeTextAnchor(Text $element)
-    {
-        $fontStyle = $element->getFontStyle();
-        $font = $this->getZendFont($fontStyle);
-        $scale = $fontStyle->getSize() / (float) $font->getUnitsPerEm();
-        $x = $element->getX();
-        $y = $element->getY();
-        switch ($fontStyle->getHAlign()) {
-            case FontStyle::HORIZONTAL_ALIGN_MIDDLE:
-                $glyphNumbers = $font->glyphNumbersForCharacters(TextUtils::getOrds($element->getText()));
-                $x -= 0.5 * $scale * array_sum($font->widthsForGlyphs($glyphNumbers));
-                break;
-            case FontStyle::HORIZONTAL_ALIGN_RIGHT:
-                $glyphNumbers = $font->glyphNumbersForCharacters(TextUtils::getOrds($element->getText()));
-                $x -= $scale * array_sum($font->widthsForGlyphs($glyphNumbers));
-                break;
-        }
-        switch ($fontStyle->getVAlign()) {
-            case FontStyle::VERTICAL_ALIGN_TOP:
-                $y -= $scale * ($font->getAscent() - $font->getDescent());
-                break;
-            case FontStyle::VERTICAL_ALIGN_CENTRAL:
-                $y -= 0.5 * $scale * $font->getAscent();
-                break;
-            case FontStyle::VERTICAL_ALIGN_BOTTOM:
-                $y -= $scale * ($font->getDescent() + $font->getDescent());
-                break;
-        }
-        return [$x, $y, $font];
     }
     
     /**

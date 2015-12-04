@@ -18,7 +18,7 @@ class TextUtils
      *
      * @return int[]
      */
-    public static function getOrds($text)
+    public static function getCodes($text)
     {
         $length = strlen($text);
         $ords = [];
