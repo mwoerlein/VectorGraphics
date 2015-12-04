@@ -21,9 +21,10 @@ function getGroupPath($r1, $r2, $alpha, $angle)
     $scale = ArcUtils::getScale($radians);
     list ($sX, $sY) = ArcUtils::getPolarPoint($r2, $radians[0]);
     list ($curX, $curY) = ArcUtils::getPolarPoint($r1, $radians[0]);
-    $path
-        ->moveTo($sX, $sY)
-        ->lineTo($curX, $curY);
+    $path->moveTo($sX, $sY);
+    if ($r1 !== $r2) {
+        $path->lineTo($curX, $curY);
+    }
     $pos = 1;
     while ($pos < count($radians)) {
         list ($nextX, $nextY) = ArcUtils::getPolarPoint($r1, $radians[$pos++]);
@@ -34,7 +35,9 @@ function getGroupPath($r1, $r2, $alpha, $angle)
         $curY = $nextY;
     }
     list ($eX, $eY) = ArcUtils::getPolarPoint($r2, end($radians));
-    $path->lineTo($eX, $eY);
+    if ($r1 !== $r2) {
+        $path->lineTo($eX, $eY);
+    }
     return $path;
 }
 

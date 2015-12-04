@@ -116,7 +116,7 @@ abstract class AbstractElementContainer
      * @param string $text
      * @param Path $path
      *
-     * @return Text
+     * @return PathText
      */
     public function addPathText($text, Path $path) {
         return $this->addAndInitText(new PathText($text, $path));

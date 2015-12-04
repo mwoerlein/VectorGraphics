@@ -52,6 +52,9 @@ class SVGWriter extends AbstractWriter
     private function addElements(SimpleXMLElement $svg, array $elements, $yBase)
     {
         foreach ($elements as $element) {
+            if (!$element->isVisible()) {
+                continue;
+            }
             if ($element instanceof Text) {
                 $this->addText($svg, $element, $yBase);
             } elseif ($element instanceof PathText) {
