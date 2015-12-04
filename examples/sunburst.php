@@ -72,8 +72,8 @@ $graphic->getDefaultShapeStrokeStyle()
 for($i=-4; $i<25; $i++) {
     $arc = $graphic->addRingArc(0, 0, 6 * $i + 50, 240, 15 * $i, 15);
     $arc->setFillOpacity(($i+8)/32.);
-    list ($x, $y) = $arc->getPoint(RingArc::ALPHA_CENTRAL, RingArc::RADIUS_MIDDLE);
-    $graphic->addText($i, $x, $y);
+    $anchor = $arc->getAnchor(RingArc::ALPHA_CENTRAL, RingArc::RADIUS_MIDDLE);
+    $graphic->addText($i, $anchor->x, $anchor->y);//->setRotation($anchor->getRotation());
 }
 
 // draw outer arcs

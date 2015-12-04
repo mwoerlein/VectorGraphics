@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\Model\Shape;
 
+use VectorGraphics\Model\AnchorPath\Anchor;
 use VectorGraphics\Model\Path;
 use VectorGraphics\Utils\ArcUtils;
 
@@ -115,18 +116,18 @@ class RingArc extends AbstractShape
     }
     
     /**
-     * @param string $relAngle 
+     * @param string $relAngle
      * @param string $relRadius
      *
-     * @return float[] [$x, $y]
+     * @return Anchor
      */
-    public function getPoint($relAngle = self::ALPHA_CENTRAL, $relRadius = self::RADIUS_MIDDLE)
+    public function getAnchor($relAngle = self::ALPHA_CENTRAL, $relRadius = self::RADIUS_MIDDLE)
     {
         list ($x, $y) = ArcUtils::getPolarPoint(
             $this->getRelRadius($relRadius),
-            ArcUtils::toRadian($this->normalizeDegree($this->getRelAngle($relAngle))) 
+            ArcUtils::toRadian($this->normalizeDegree($this->getRelAngle($relAngle)))
         );
-        return [$x + $this->getX(), $y + $this->getY()];
+        return new Anchor($x + $this->getX(), $y + $this->getY(), $y, -$x);
     }
     
     private function getRelRadius($pos) {

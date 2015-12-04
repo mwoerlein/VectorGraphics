@@ -41,4 +41,12 @@ class Anchor
             + ($this->y - $anchor->y) * ($this->y - $anchor->y)
         );
     }
+    
+    /**
+     * @return float
+     */
+    public function getRotation()
+    {
+        return -180. * atan2($this->tangentY, $this->tangentX) / pi();
+    }
 }
