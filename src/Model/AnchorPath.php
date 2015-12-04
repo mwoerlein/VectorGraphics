@@ -6,6 +6,7 @@ use VectorGraphics\Model\AnchorPath\CurvedSection;
 use VectorGraphics\Model\AnchorPath\LinearSection;
 use VectorGraphics\Model\AnchorPath\SectionInterface;
 use VectorGraphics\Model\AnchorPath\TableElement;
+use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\LineTo;
 
@@ -64,8 +65,8 @@ class AnchorPath
         $elem1 = $this->table[$left];
         // linear interpolation between elem-0 and elem-1
         $scale = ($pos - $elem0->pos) / ($elem1->pos - $elem0->pos);
-        $t0 = $elem0->section === $elem1->section ? $elem0->sectionPos : 0.; 
-        return $elem1->section->getAnchor($t0 + $scale * ($elem1->sectionPos - $t0));
+        $sectionPos0 = $elem0->section === $elem1->section ? $elem0->sectionPos : 0.; 
+        return $elem1->section->getAnchor($sectionPos0 + $scale * ($elem1->sectionPos - $sectionPos0));
     }
     
     /**
@@ -73,25 +74,31 @@ class AnchorPath
      */
     private function initTable(Path $path)
     {
-        $curX = 0;
-        $curY = 0;
+        $curX = 0.;
+        $curY = 0.;
         foreach ($path->getElements() as $path) {
-            if ($path instanceof LineTo) {
-                $this->append(new LinearSection($curX, $curY, $path->getDestX(), $path->getDestY()));
+            $destX = $path->getDestX();
+            $destY = $path->getDestY();
+            if ($path instanceof LineTo || $path instanceof Close) {
+                if ($curX === $destX && $curY === $destY) {
+                    // skip empty lines
+                    continue;
+                }
+                $this->addSection(new LinearSection($curX, $curY, $destX, $destY));
             } elseif ($path instanceof CurveTo) {
-                $this->append(new CurvedSection(
+                $this->addSection(new CurvedSection(
                     $curX, $curY,
                     $path->getControl1X(), $path->getControl1Y(),
                     $path->getControl2X(), $path->getControl2Y(),
-                    $path->getDestX(), $path->getDestY()
+                    $destX, $destY
                 ));
             }
-            $curX = $path->getDestX();
-            $curY = $path->getDestY();
+            $curX = $destX;
+            $curY = $destY;
         }
     }
     
-    private function append(SectionInterface $section) {
+    private function addSection(SectionInterface $section) {
         if ($this->isEmpty()) {
             $this->table[] = $curElement = new TableElement(0., 0., $section, $section->getAnchor(0.));
         } else {
