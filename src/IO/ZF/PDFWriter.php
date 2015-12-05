@@ -2,7 +2,8 @@
 namespace VectorGraphics\IO\ZF;
 
 use VectorGraphics\IO\AbstractWriter;
-use VectorGraphics\Model\AnchorPath;
+use VectorGraphics\Model\Anchor;
+use VectorGraphics\Model\Anchor\AnchorPath;
 use VectorGraphics\Model\Graphic;
 use VectorGraphics\Model\Graphic\Viewport;
 use VectorGraphics\Model\Path;
@@ -153,6 +154,26 @@ class PDFWriter extends AbstractWriter
     
     /**
      * @param ZendPage $page
+     * @param Anchor $anchor
+     */
+    private function translateAndRotateToAnchor(ZendPage $page, Anchor $anchor)
+    {
+        $tangentLength = $anchor->getTangentLength();
+        $cos  = new ZendNumericObject($anchor->tangentX / $tangentLength);
+        $sin  = new ZendNumericObject($anchor->tangentY / $tangentLength);
+        $mSin = new ZendNumericObject(-$sin->value);
+    
+        $xObj = new ZendNumericObject($anchor->x);
+        $yObj = new ZendNumericObject($anchor->y);
+    
+        $content = '1 0 0 1 ' . $xObj->toString() . ' ' . $yObj->toString() . " cm\n"
+            .  $cos->toString() . ' ' . $sin->toString() . ' ' . $mSin->toString() . ' ' . $cos->toString() . " 0 0 cm\n";
+    
+        $page->rawWrite($content, 'PDF');
+    }
+    
+    /**
+     * @param ZendPage $page
      * @param AbstractShape $shape
      *
      * @throws \Exception
@@ -247,8 +268,7 @@ class PDFWriter extends AbstractWriter
             }
             
             $page->saveGS();
-            $page->translate($anchor->x, $anchor->y);
-            $page->rotate(0, 0, atan2($anchor->tangentY, $anchor->tangentX));
+            $this->translateAndRotateToAnchor($page, $anchor);
             $this->drawFormattedText($page, $char, -$width / 2., -$yShift, $element);
             $page->restoreGS();
         }

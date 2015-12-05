@@ -1,7 +1,7 @@
 <?php
 namespace VectorGraphics\Tests\Model\Shape;
 
-use VectorGraphics\Model\AnchorPath\Anchor;
+use VectorGraphics\Model\Anchor;
 use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\LineTo;

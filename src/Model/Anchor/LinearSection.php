@@ -1,5 +1,7 @@
 <?php
-namespace VectorGraphics\Model\AnchorPath;
+namespace VectorGraphics\Model\Anchor;
+
+use VectorGraphics\Model\Anchor;
 
 class LinearSection implements SectionInterface
 {

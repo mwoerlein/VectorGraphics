@@ -1,5 +1,5 @@
 <?php
-namespace VectorGraphics\Model\AnchorPath;
+namespace VectorGraphics\Model;
 
 class Anchor
 {
@@ -21,7 +21,7 @@ class Anchor
      * @param float $tx
      * @param float $ty
      */
-    public function __construct($x, $y, $tx, $ty)
+    public function __construct($x, $y, $tx = 1., $ty = 0.)
     {
         $this->x = $x;
         $this->y = $y;
@@ -48,5 +48,13 @@ class Anchor
     public function getRotation()
     {
         return -180. * atan2($this->tangentY, $this->tangentX) / pi();
+    }
+    
+    /**
+     * @return float
+     */
+    public function getTangentLength()
+    {
+        return sqrt($this->tangentX * $this->tangentX + $this->tangentY * $this->tangentY);
     }
 }

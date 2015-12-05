@@ -1,7 +1,7 @@
 <?php
 namespace VectorGraphics\Model\Shape;
 
-use VectorGraphics\Model\AnchorPath\Anchor;
+use VectorGraphics\Model\Anchor;
 use VectorGraphics\Model\Path;
 use VectorGraphics\Utils\ArcUtils;
 

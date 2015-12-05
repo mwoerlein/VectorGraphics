@@ -1,11 +1,8 @@
 <?php
-namespace VectorGraphics\Model;
+namespace VectorGraphics\Model\Anchor;
 
-use VectorGraphics\Model\AnchorPath\Anchor;
-use VectorGraphics\Model\AnchorPath\CurvedSection;
-use VectorGraphics\Model\AnchorPath\LinearSection;
-use VectorGraphics\Model\AnchorPath\SectionInterface;
-use VectorGraphics\Model\AnchorPath\TableElement;
+use VectorGraphics\Model\Anchor;
+use VectorGraphics\Model\Path;
 use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\LineTo;
