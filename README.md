@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mwoerlein/vector-graphics.svg?branch=develop)](https://travis-ci.org/mwoerlein/vector-graphics)
+[![Build Status](https://travis-ci.org/mwoerlein/vector-graphics.svg?branch=master)](https://travis-ci.org/mwoerlein/vector-graphics)
 
 # Vector Graphics Library
 PHP library for OO-modeling of vector graphics.
@@ -21,7 +21,7 @@ To add vector-graphics as a local, per-project dependency to your project, simpl
 ```JSON
 {
     "require": {
-        "mwoerlein/vector-graphics": "*@dev"
+        "mwoerlein/vector-graphics": ">0.2"
     }
 }
 ```
@@ -47,8 +47,8 @@ The following example generates a svg-image containing a pentagram in a red circ
     header('Content-Type: image/svg+xml');
     echo (new SVGWriter())->toSVG($graphic, 10, 10);
 
-[![SVG Sample](https://raw.githubusercontent.com/mwoerlein/vector-graphics/develop/docs/pentagram.png)](https://github.com/mwoerlein/vector-graphics/blob/develop/docs/pentagram.svg)
+[![SVG Sample](https://raw.githubusercontent.com/mwoerlein/vector-graphics/master/docs/pentagram.png)](https://github.com/mwoerlein/vector-graphics/blob/master/docs/pentagram.svg)
 
 ## Progress
 
-see in [ChangeLog](https://github.com/mwoerlein/vector-graphics/blob/develop/CHANGELOG.md)
+see in [ChangeLog](https://github.com/mwoerlein/vector-graphics/blob/master/CHANGELOG.md)
