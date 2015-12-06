@@ -83,12 +83,19 @@ class AnchorPath
                 }
                 $this->addSection(new LinearSection($curX, $curY, $destX, $destY));
             } elseif ($path instanceof CurveTo) {
-                $this->addSection(new CurvedSection(
-                    $curX, $curY,
-                    $path->getControl1X(), $path->getControl1Y(),
-                    $path->getControl2X(), $path->getControl2Y(),
-                    $destX, $destY
-                ));
+                $c1x = $path->getControl1X();
+                $c1y = $path->getControl1Y();
+                $c2x = $path->getControl2X();
+                $c2y = $path->getControl2Y();
+                if (
+                    $curX === $destX && $curY === $destY
+                    && $curX === $c1x && $curY === $c1y
+                    && $curX === $c2x && $curY === $c2y
+                ) {
+                    // skip empty curve
+                    continue;
+                }
+                $this->addSection(new CurvedSection($curX, $curY, $c1x, $c1y, $c2x, $c2y, $destX, $destY));
             }
             $curX = $destX;
             $curY = $destY;
