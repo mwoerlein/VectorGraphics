@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\Tests\Model\Shape;
 
+use InvalidArgumentException;
 use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\LineTo;
 use VectorGraphics\Model\Path\MoveTo;
@@ -64,5 +65,40 @@ class RectangleTest extends AbstractShapeTest
             ],
         ];
         return $data;
+    }
+    
+    /**
+     * @return array[]
+     */
+    public function invalidConstructorProvider()
+    {
+        $data = [];
+        $data['missing width'] = [
+            'x' => 0,
+            'y' => 0,
+            'width' => 0,
+            'height' => 1,
+        ];
+        $data['missing height'] = [
+            'x' => 0,
+            'y' => 0,
+            'width' => 1,
+            'height' => 0,
+        ];
+        return $data;
+    }
+    
+    /**
+     * @param float $x
+     * @param float $y
+     * @param float $width
+     * @param float $height
+     *
+     * @dataProvider invalidConstructorProvider
+     */
+    public function testInvalidConstructor($x, $y, $width, $height)
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        $this->createShape($x, $y, $width, $height);
     }
 }

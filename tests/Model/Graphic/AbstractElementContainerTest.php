@@ -86,7 +86,7 @@ abstract class AbstractElementContainerTest extends TestCase
                 new RingArc(1, 2, 3, 4, 5, 6),
             ],
         ];
-        $path = new Path();
+        $path = new Path(0, 0);
         $data['add path'] = [
             'add' => [
                 'path' => [$path],

@@ -1,6 +1,8 @@
 <?php
 namespace VectorGraphics\Model;
 
+use InvalidArgumentException;
+
 class Anchor
 {
     /** @var float */
@@ -23,10 +25,14 @@ class Anchor
      */
     public function __construct($x, $y, $tx = 1., $ty = 0.)
     {
-        $this->x = $x;
-        $this->y = $y;
-        $this->tangentX = $tx;
-        $this->tangentY = $ty;
+        if ($tx == 0. && $ty == 0.) {
+            throw new InvalidArgumentException('tangent has to have any direction');
+        }
+        $this->x = (float) $x;
+        $this->y = (float) $y;
+        $tl = sqrt($tx * $tx + $ty * $ty);
+        $this->tangentX = (float) $tx / $tl;
+        $this->tangentY = (float) $ty / $tl;
     }
     
     /**
@@ -47,14 +53,7 @@ class Anchor
      */
     public function getRotation()
     {
-        return -180. * atan2($this->tangentY, $this->tangentX) / pi();
-    }
-    
-    /**
-     * @return float
-     */
-    public function getTangentLength()
-    {
-        return sqrt($this->tangentX * $this->tangentX + $this->tangentY * $this->tangentY);
+        $rotation = -180. * atan2($this->tangentY, $this->tangentX) / pi();
+        return $rotation >= 0. ? $rotation : $rotation + 360.;
     }
 }

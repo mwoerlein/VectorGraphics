@@ -26,14 +26,14 @@ class PathTextTest extends AbstractTextTest
      */
     protected function createText($text = 'text', Path $path = null)
     {
-        return new PathText($text, $path ?: new Path());
+        return new PathText($text, $path ?: new Path(0, 0));
     }
     
     /**
      */
     public function testGetter()
     {
-        $path = new Path();
+        $path = new Path(0, 0);
         $text = $this->createText('My Text', $path);
         $this->assertSame('My Text', $text->getText());
         $this->assertSame($path, $text->getPath());
@@ -42,5 +42,4 @@ class PathTextTest extends AbstractTextTest
         $this->assertInstanceOf(FontStyle::class, $text->getFontStyle());
         $this->assertInstanceOf(StrokeStyle::class, $text->getStrokeStyle());
     }
-    
 }

@@ -1,6 +1,8 @@
 <?php
 namespace VectorGraphics\Model\Style;
 
+use InvalidArgumentException;
+
 abstract class AbstractColoredStyle implements StyleInterface
 {
     /** @var HtmlColor */
@@ -47,8 +49,7 @@ abstract class AbstractColoredStyle implements StyleInterface
                 $this->opacity = (float) $opacity;
             }
         } else {
-            // TODO: cleanup exceptions
-            throw new \Exception('Invalid Color: ' . get_class($color));
+            throw new InvalidArgumentException('invalid color: ' . get_class($color));
         }
         return $this;
     }

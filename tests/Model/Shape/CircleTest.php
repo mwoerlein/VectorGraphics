@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\Tests\Model\Shape;
 
+use InvalidArgumentException;
 use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
 use VectorGraphics\Model\Path\MoveTo;
@@ -64,5 +65,37 @@ class CircleTest extends AbstractShapeTest
             ],
         ];
         return $data;
+    }
+    
+    /**
+     * @return array[]
+     */
+    public function invalidConstructorProvider()
+    {
+        $data = [];
+        $data['radius 0'] = [
+            'x' => 0,
+            'y' => 0,
+            'r' => 0,
+        ];
+        $data['negative radius'] = [
+            'x' => 0,
+            'y' => 0,
+            'r' => -3,
+        ];
+        return $data;
+    }
+    
+    /**
+     * @param float $x
+     * @param float $y
+     * @param float $radius
+     * 
+     * @dataProvider invalidConstructorProvider
+     */
+    public function testInvalidConstructor($x, $y, $radius)
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        $this->createShape($x, $y, $radius);
     }
 }

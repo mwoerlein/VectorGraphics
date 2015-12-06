@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\IO\ZF;
 
+use InvalidArgumentException;
 use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Anchor;
 use VectorGraphics\Model\Anchor\AnchorPath;
@@ -100,8 +101,7 @@ class PDFWriter extends AbstractWriter
             } elseif ($element instanceof AbstractShape) {
                 $this->drawShape($page, $element);
             } else {
-                // TODO: cleanup exceptions
-                throw new \Exception("Unexpected");
+                throw new InvalidArgumentException('unsupported graphic element: ' . get_class($element));
             }
         }
         $page->restoreGS();
@@ -158,9 +158,8 @@ class PDFWriter extends AbstractWriter
      */
     private function translateAndRotateToAnchor(ZendPage $page, Anchor $anchor)
     {
-        $tangentLength = $anchor->getTangentLength();
-        $cos  = new ZendNumericObject($anchor->tangentX / $tangentLength);
-        $sin  = new ZendNumericObject($anchor->tangentY / $tangentLength);
+        $cos  = new ZendNumericObject($anchor->tangentX);
+        $sin  = new ZendNumericObject($anchor->tangentY);
         $mSin = new ZendNumericObject(-$sin->value);
     
         $xObj = new ZendNumericObject($anchor->x);
@@ -427,8 +426,7 @@ class PDFWriter extends AbstractWriter
             } elseif ($element instanceof Close) {
                 $content .= "h\n";
             } else {
-                // TODO: cleanup exceptions
-                throw new \Exception('Unsupported PathElement: ' . get_class($element));
+                throw new InvalidArgumentException('unsupported path element: ' . get_class($element));
             }
         }
         
@@ -517,8 +515,9 @@ class PDFWriter extends AbstractWriter
     protected function getZendFont(FontStyle $fontStyle)
     {
         if (!isset($this->fontMap[$fontStyle->getName()][$fontStyle->getStyle()])) {
-            // TODO: cleanup exceptions
-            throw new \Exception('Font not fount: ' . $fontStyle);
+            throw new InvalidArgumentException(
+                'unsupported font: ' . $fontStyle->getName() . '/' . $fontStyle->getStyle()
+            );
         }
         return ZendFont::fontWithName($this->fontMap[$fontStyle->getName()][$fontStyle->getStyle()]);
     }

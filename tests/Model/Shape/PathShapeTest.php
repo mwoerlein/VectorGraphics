@@ -13,14 +13,14 @@ class PathShapeTest extends AbstractShapeTest
      */
     protected function createShape(Path $path = null)
     {
-        return new PathShape($path ?: (new Path())->moveTo(0,0)->lineTo(1,1));
+        return new PathShape($path ?: (new Path(0, 0))->lineTo(1, 1));
     }
     
     /**
      */
     public function testVisibilityWithEmptyPath()
     {
-        $path = new Path();
+        $path = new Path(0, 0);
         $shape = $this->createShape($path);
         $this->assertFalse($shape->isVisible());
     }
@@ -30,7 +30,7 @@ class PathShapeTest extends AbstractShapeTest
      */
     public function getPathProvider()
     {
-        $path = new Path();
+        $path = new Path(0, 0);
         $data = [];
         $data['empty path'] = [
             'shape' => $this->createShape($path),

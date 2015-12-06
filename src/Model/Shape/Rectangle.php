@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\Model\Shape;
 
+use InvalidArgumentException;
 use VectorGraphics\Model\Path;
 
 class Rectangle extends AbstractShape
@@ -25,6 +26,12 @@ class Rectangle extends AbstractShape
      */
     public function __construct($x, $y, $width, $height)
     {
+        if ($width <= 0.) {
+            throw new InvalidArgumentException(__CLASS__ . 'has to have a positive width');
+        }
+        if ($height <= 0.) {
+            throw new InvalidArgumentException(__CLASS__ . 'has to have a positive height');
+        }
         parent::__construct();
         $this->x = (float) $x;
         $this->y = (float) $y;
@@ -73,8 +80,7 @@ class Rectangle extends AbstractShape
         $y1 = $this->getY();
         $x2 = $this->getX() + $this->getWidth();
         $y2 = $this->getY() + $this->getHeight();
-        return (new Path())
-            ->moveTo($x1, $y1)
+        return (new Path($x1, $y1))
             ->lineTo($x1, $y2)
             ->lineTo($x2, $y2)
             ->lineTo($x2, $y1)

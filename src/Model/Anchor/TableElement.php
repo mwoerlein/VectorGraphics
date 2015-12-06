@@ -21,14 +21,14 @@ class TableElement
      * TableElement constructor.
      *
      * @param float $pos
-     * @param float $sectionPos
+     * @param float $sectionPos [0.,1.]
      * @param SectionInterface $section
      * @param Anchor $anchor
      */
     public function __construct($pos, $sectionPos, SectionInterface $section, Anchor $anchor)
     {
-        $this->pos = $pos;
-        $this->sectionPos = $sectionPos;
+        $this->pos = (float) $pos;
+        $this->sectionPos = (float) $sectionPos;
         $this->section = $section;
         $this->anchor = $anchor;
     }

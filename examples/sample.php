@@ -42,8 +42,7 @@ $text->setStrokeColor('red');
 $text->setStrokeWidth(1);
 $text->setOpacity(0.4);
 
-$shape = $graphic->addPath((new Path())
-    ->moveTo(0, 0)
+$shape = $graphic->addPath((new Path(0, 0))
     ->lineTo(80, -80)
     ->moveTo(0, -80)
     ->lineTo(80, 0)
@@ -75,8 +74,7 @@ $rect->setFillColor('green');
 $rect->setStrokeColor('blue', 0.5);
 
 $radius = 80;
-$p1 = $path = new Path();
-$path->moveTo($radius * sin(0./5. * pi()), $radius * cos(0./5. * pi()));
+$p1 = $path = new Path($radius * sin(0./5. * pi()), $radius * cos(0./5. * pi()));
 $path->curveTo(
     $radius * sin(1./5. * pi())/2, $radius * cos(1./5. * pi())/2,
     $radius * sin(3./5. * pi())/2, $radius * cos(3./5. * pi())/2,
@@ -108,8 +106,7 @@ $graphic->addPath($path)
     ->setFillColor('black', 0.3);
 
 $radius = 80;
-$path = new Path();
-$path->moveTo($radius * sin(1./5. * pi()), $radius * cos(1./5. * pi()));
+$path = new Path($radius * sin(1./5. * pi()), $radius * cos(1./5. * pi()));
 $path->lineTo($radius * sin(5./5. * pi()), $radius * cos(5./5. * pi()));
 $path->lineTo($radius * sin(9./5. * pi()), $radius * cos(9./5. * pi()));
 $path->lineTo($radius * sin(3./5. * pi()), $radius * cos(3./5. * pi()));
@@ -123,8 +120,7 @@ $graphic->addPath($path)
     ->setOpacity(0.6);
 
 $radius = 20;
-$path = new Path();
-$path->moveTo($radius * sin(0./3. * pi()), $radius * cos(0./3. * pi()));
+$path = new Path($radius * sin(0./3. * pi()), $radius * cos(0./3. * pi()));
 $path->lineTo($radius * sin(2./3. * pi()), $radius * cos(2./3. * pi()));
 $path->lineTo($radius * sin(4./3. * pi()), $radius * cos(4./3. * pi()));
 $path->close();

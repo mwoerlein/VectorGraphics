@@ -11,11 +11,20 @@ class Path {
     /** @var PathElement[] */
     private $elements = [];
     
-    /** @var MoveTo|null */
-    private $lastMoveTo = null;
+    /** @var MoveTo */
+    private $lastMoveTo;
     
     /** @var bool */
     private $visible = false;
+    
+    /**
+     * @param float $x
+     * @param float $y
+     */
+    public function __construct($x, $y)
+    {
+        $this->moveTo($x, $y);
+    }
     
     /**
      * @param float $x
@@ -62,10 +71,6 @@ class Path {
      */
     public function close()
     {
-        if (null === $this->lastMoveTo) {
-            // TODO: cleanup exceptions
-            throw new \Exception('Unexpected');
-        }
         $this->add(new Close($this->lastMoveTo->getDestX(), $this->lastMoveTo->getDestY()));
         $this->lastMoveTo = null;
         return $this;

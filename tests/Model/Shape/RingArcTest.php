@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\Tests\Model\Shape;
 
+use InvalidArgumentException;
 use VectorGraphics\Model\Anchor;
 use VectorGraphics\Model\Path\Close;
 use VectorGraphics\Model\Path\CurveTo;
@@ -230,5 +231,54 @@ class RingArcTest extends AbstractShapeTest
             'em' => $arc->getAnchor(RingArc::ALPHA_END, RingArc::RADIUS_MIDDLE),
             'eo' => $arc->getAnchor(RingArc::ALPHA_END, RingArc::RADIUS_OUTER),
         ]);
+    }
+    
+    /**
+     * @return array[]
+     */
+    public function invalidConstructorProvider()
+    {
+        $data = [];
+        $data['inner radius 0'] = [
+            'x' => 0,
+            'y' => 0,
+            'innerradius' => 0,
+            'outerradius' => 1,
+            'alpha' => 0,
+            'angle' => 1,
+        ];
+        $data['negativ inner radius'] = [
+            'x' => 0,
+            'y' => 0,
+            'innerradius' => 0,
+            'outerradius' => 1,
+            'alpha' => 0,
+            'angle' => 1,
+        ];
+        $data['outer radius < inner radius'] = [
+            'x' => 0,
+            'y' => 0,
+            'innerradius' => 2,
+            'outerradius' => 1,
+            'alpha' => 0,
+            'angle' => 1,
+        ];
+        return $data;
+    }
+    
+    /**
+     * @param float $x
+     * @param float $y
+     * @param float $innerRadius
+     * @param float $outerRadius
+     * @param float $alpha
+     * @param float $angle
+     *
+     * @dataProvider invalidConstructorProvider
+     */
+    public function testInvalidConstructor($x, $y, $innerRadius, $outerRadius, $alpha, $angle)
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        $this->createShape($x, $y, $innerRadius, $outerRadius, $alpha, $angle);
     }
 }

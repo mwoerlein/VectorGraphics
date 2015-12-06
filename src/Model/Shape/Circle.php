@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\Model\Shape;
 
+use InvalidArgumentException;
 use VectorGraphics\Model\Path;
 
 class Circle extends AbstractShape
@@ -21,6 +22,9 @@ class Circle extends AbstractShape
      */
     public function __construct($x, $y, $radius)
     {
+        if ($radius <= 0.) {
+            throw new InvalidArgumentException(__CLASS__ . 'has to have a positive $radius');
+        }
         parent::__construct();
         $this->x = (float) $x;
         $this->y = (float) $y;
@@ -60,8 +64,7 @@ class Circle extends AbstractShape
         $y = $this->getY();
         $r = $this->getRadius();
         $s = $r * 4. * (sqrt(2.) - 1.) / 3.;
-        return (new Path())
-            ->moveTo($x, $y+$r)
+        return (new Path($x, $y+$r))
             ->curveTo($x+$s, $y+$r, $x+$r, $y+$s, $x+$r, $y)
             ->curveTo($x+$r, $y-$s, $x+$s, $y-$r, $x, $y-$r)
             ->curveTo($x-$s, $y-$r, $x-$r, $y-$s, $x-$r, $y)

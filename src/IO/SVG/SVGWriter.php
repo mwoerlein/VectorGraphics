@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\IO\SVG;
 
+use InvalidArgumentException;
 use SimpleXMLElement;
 use VectorGraphics\IO\AbstractWriter;
 use VectorGraphics\Model\Graphic;
@@ -66,8 +67,7 @@ class SVGWriter extends AbstractWriter
             } elseif ($element instanceof AbstractShape) {
                 $this->addShape($svg, $element, $yBase);
             } else {
-                // TODO: cleanup exceptions
-                throw new \Exception("Unexpected");
+                throw new InvalidArgumentException('unsupported graphic element: ' . get_class($element));
             }
         }
         return $svg;
@@ -206,8 +206,7 @@ class SVGWriter extends AbstractWriter
             } elseif ($element instanceof Close) {
                 $d .= "Z ";
             } else {
-                // TODO: cleanup exceptions
-                throw new \Exception("Unexpected");
+                throw new InvalidArgumentException('unsupported path element: ' . get_class($element));
             }
         }
         $child = $svg->addChild("path");

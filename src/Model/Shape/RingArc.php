@@ -1,6 +1,7 @@
 <?php
 namespace VectorGraphics\Model\Shape;
 
+use InvalidArgumentException;
 use VectorGraphics\Model\Anchor;
 use VectorGraphics\Model\Path;
 use VectorGraphics\Utils\ArcUtils;
@@ -43,6 +44,14 @@ class RingArc extends AbstractShape
      */
     public function __construct($x, $y, $innerRadius, $outerRadius, $alpha = 0., $angle = 360.)
     {
+        if ($innerRadius <= 0.) {
+            throw new InvalidArgumentException(__CLASS__ . 'has to have a positive $innerRadius');
+        }
+        if ($outerRadius < $innerRadius) {
+            throw new InvalidArgumentException(
+                '$outerRadius has to be greater or equal to $innerRadius in ' . __CLASS__
+            );
+        }
         parent::__construct();
         $this->x = (float) $x;
         $this->y = (float) $y;
@@ -163,8 +172,7 @@ class RingArc extends AbstractShape
         $si = $ri*4.*(sqrt(2.)-1.)/3.;
         $ro = $this->getOuterRadius();
         $so = $ro*4.*(sqrt(2.)-1.)/3.;
-        return (new Path())
-            ->moveTo($x, $y+$ro)
+        return (new Path($x, $y+$ro))
             ->curveTo($x+$so, $y+$ro, $x+$ro, $y+$so, $x+$ro, $y)
             ->curveTo($x+$ro, $y-$so, $x+$so, $y-$ro, $x, $y-$ro)
             ->curveTo($x-$so, $y-$ro, $x-$ro, $y-$so, $x-$ro, $y)
@@ -189,13 +197,11 @@ class RingArc extends AbstractShape
         $inner = $this->getInnerRadius();
         $cx = $this->getX();
         $cy = $this->getY();
-        $path = new Path();
         if ($this->angle === 0.) {
             $radian = ArcUtils::toRadian($this->getAlpha());
             list($outerX, $outerY) = ArcUtils::getPolarPoint($outer, $radian);
             list($innerX, $innerY) = ArcUtils::getPolarPoint($inner, $radian);
-            return $path
-                ->moveTo($outerX + $cx, $outerY + $cy)
+            return (new Path($outerX + $cx, $outerY + $cy))
                 ->lineTo($innerX + $cx, $innerY + $cy)
                 ->close();
         }
@@ -206,7 +212,7 @@ class RingArc extends AbstractShape
         
         // outer arc
         list($curX, $curY) = ArcUtils::getPolarPoint($outer, $radians[$pos++]);
-        $path->moveTo($curX + $cx, $curY + $cy);
+        $path = new Path($curX + $cx, $curY + $cy);
         while ($pos < count($radians)) {
             list ($nextX, $nextY) = ArcUtils::getPolarPoint($outer, $radians[$pos++]);
             list ($c1X, $c1Y) = ArcUtils::getBezierControl($curX, $curY, -$scale);

@@ -1,9 +1,10 @@
 <?php
 namespace VectorGraphics\Model\Style;
 
+use InvalidArgumentException;
+
 class HtmlColor
 {
-    // TODO: cleanup exceptions
     const PATTERN_NAME = "/^[a-z]*$/";
     const PATTERN_HEX = "/^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/";
     const PATTERN_RGB = "/^rgb\\(\\s*(0|[1-9]\\d?|1\\d\\d?|2[0-4]\\d|25[0-5])\\s*,\\s*(0|[1-9]\\d?|1\\d\\d?|2[0-4]\\d|25[0-5])\\s*,\\s*(0|[1-9]\\d?|1\\d\\d?|2[0-4]\\d|25[0-5])\\s*\\)$/";
@@ -50,8 +51,7 @@ class HtmlColor
                 );
                 return $ret;
             default:
-            // TODO: cleanup exceptions
-            throw new \Exception('Invalid Color: ' . $hex);
+            throw new InvalidArgumentException('invalid hex color: ' . $hex);
         }
     }
     
