@@ -1,5 +1,10 @@
 # ChangeLog
 
+#### 0.2 (2015-12-06)
+
+- basic model for anchors
+- text along path for zend-pdf-writer
+
 #### 0.1.1 (2015-12-02)
 
 - enhance and fix unit-tests
